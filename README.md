@@ -1,7 +1,10 @@
 # global variable
 ```
 Copyright 2021 (C) 张子辰
-Copying and distribution of this file, with or without modification, are permitted in any medium without royalty provided the copyright notice and this notice are preserved. This file is offered as-is, without any warranty.
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright 
+notice and this notice are preserved. This file is offered as-is, 
+without any warranty.
 ```
 ## 简介
 C++ 程序的一个全局变量（<!--指具有命名空间作用域的对象-->）的构造（<!--指调用构造函数-->）可能依赖于另一个全局变量，而全局变量构造的顺序取决于目标文件中变量定义的顺序，而后者取决于连接顺序。于是，不恰当的连接顺序可导致构造一个全局变量时，它所依赖的全局变量尚未构造。
@@ -68,7 +71,7 @@ C++ 程序的一个全局变量（<!--指具有命名空间作用域的对象-->
 	| `type` | `typedef Tp type;` |
 
 ## 异常
-当全局变量的构造间接或直接依赖自身时，global_variable_t对象将抛出circular_initialization型异常，what()函数可查询初始化依赖环中的全局变量。
+当全局变量的构造间接或直接依赖自身时，`global_variable_t`对象将抛出`circular_initialization`型异常，`what()`函数可查询初始化依赖环中的全局变量。
 例如：
 
 ```cpp
@@ -89,7 +92,7 @@ what():  the circle is `b' <-- `a' <-- `b'
 
 1. 不定义`extern_global_variable`和`global_variable`两个宏：在首次包含`global_variable.hpp`前定义宏`_LIB_SAFE_GLOBAL_VAR_NO_MACRO`
 
-2. 更改extern_global_variable和global_variable两个宏的名字：在1的基础上，定义宏：
+2. 更改extern_global_variable和global_variable两个宏的名字：在 1 的基础上，定义宏：
 
 	(1)` <extern_global_variable的新名字> ____SGV_extern_global_variable`
 
