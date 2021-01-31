@@ -7,15 +7,7 @@ notice and this notice are preserved. This file is offered as-is,
 without any warranty.
 ```
 ## 简介
-C++ 程序的一个全局变量
-
-[^1]: 指具有命名空间作用域的对象
-
-的构造
-
-[^2]: 指调用构造函数
-
-可能依赖于另一个全局变量，而全局变量构造的顺序取决于目标文件中变量定义的顺序，而后者取决于连接顺序。于是，不恰当的连接顺序可导致构造一个全局变量时，它所依赖的全局变量尚未构造。
+C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构造(指调用构造函数)可能依赖于另一个全局变量，而全局变量构造的顺序取决于目标文件中变量定义的顺序，而后者取决于连接顺序。于是，不恰当的连接顺序可导致构造一个全局变量时，它所依赖的全局变量尚未构造。
 
 这可能会导致一系列难以解释的错误，以下是一个生动的虚构的例子：
 一个类乙需要使用“当前运行环境的库甲的版本”这个量，并且在构造时甲的版本是否达到了某个要求，如果达到了，则构造一个使用了甲的新特征的对象，如果没有，则构造一个不使用新特征的对象。实现的方式可能是指向实现的指针（参见https://zh.cppreference.com/w/cpp/language/pimpl ）。
@@ -37,7 +29,7 @@ C++ 程序的一个全局变量
 第 3 条假设保证了`global_variable_t`可以使用 63 位储存指针，1 位储存`bool`型变量，这样做使`sizeof(global_variable_t)=8`，否则`sizeof(global_variable_t)=16`。第 4 条假设让`global_variable_t`无需考虑线程安全问题。
 
 ## 推荐使用方法
-***本文中的”方法“只有自然语言中的含义，需要使用其在面向对象程序设计中的含义时，一律用”成员函数“或”函数“替代。***
+***本文中的“方法”只有自然语言中的含义，需要使用其在面向对象程序设计中的含义时，一律用“成员函数”或“函数”替代。***
 
 - [ ] **声明外部变量**：`extern_global_variable(specifier,type,name)`[宏]
 - [ ] **声明其他全局变量**：`global_variable(specifier,type,name,init)`[宏]
@@ -45,22 +37,23 @@ C++ 程序的一个全局变量
 - `specifier`可以是`const`、`volatile`、`thread_local`及它们的组合，如果不需要可以留空。
 -  `type`是变量的类型，如`uint32_t`、`std::thread`、`(std::map<std::string,std::stack<void*>>)`，如果类型中有逗号，请使用括号“`()`”包裹类型。`type`应满足*可析构(Destructible)*要求。
 - `name`是变量的名称，应满足 C++ 语言对变量名的要求。
-- `init`是初始化方法，是一个返回值是（或可自动转化为）`type`的表达式，如果不需要初始化（<!--对于这种情况，你不应该使用本库，而应直接定义全局变量-->），可以使用“`{}`”或“`type()`”，  如果表达式中有逗号，请使用括号“`()`”包裹表达式。
+- `init`是初始化方法，是一个返回值是（或可自动转化为）`type`的表达式，如果不需要初始化（对于这种情况，你不应该使用本库，而应直接定义全局变量），可以使用“`{}`”或“`type()`”，  如果表达式中有逗号，请使用括号“`()`”包裹表达式。
 
 ## 具名要求
-### *初始化器(Initalizer) *
+### *初始化器(Initalizer)* 
 类型`Tp`满足*初始化器*要求的充要条件是：
 
-1. `Tp`满足*可默认构造(DefaultConstructible)*要求；
-2. `Tp`满足*可析构(Destructible)}要求*；
+1. `Tp`满足*可默认构造(DefaultConstructible)* 要求；
+2. `Tp`满足*可析构(Destructible)* 要求；
 3. `Tp`包含公有成员函数`T operator()()`，`T`被称为`Tp`的**初始化类型**。
 
 ## global_variable_t
 `template <typename Tp,typename Init> class global_variable_t`[类模板]
+
 包装一个可能在构造前使用的全局变量。`global_variable_t`保证，即使未构造也能正常使用，只要假设 1、2 成立。
 
-- `Tp`: 包装的全局对象的类型，满足*可析构(Destructible)*要求和*可移动构造
-	(MoveConstructible)*要求。
+- `Tp`: 包装的全局对象的类型，满足*可析构(Destructible)* 要求和*可移动构造
+	(MoveConstructible)* 要求。
 	
 - `Init`: 初始化全局变量的方法，满足*初始化器(Initalizer)*要求，且初始化类型是`Tp`。
 
@@ -69,9 +62,9 @@ C++ 程序的一个全局变量
 	| (构造函数) | `global_variable_t()`                                |
 	|            | `global_variable_t(const global_variable_t&)=delete` |
 	| (析构函数) | `~global_variable_t()`                               |
-	|`operator*()`|`Tp& operator*()&|
+	|`operator*()`|`Tp& operator*()&`|
 	|   |`const Tp& operator*()&const`|
-	|`operator->()`|`Tp* opeartor->()|
+	|`operator->()`|`Tp* opeartor->()`|
 	|   |`const Tp* operator->()const`|
 	
 - |成员类型：|   |
