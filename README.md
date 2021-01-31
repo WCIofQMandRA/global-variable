@@ -7,7 +7,15 @@ notice and this notice are preserved. This file is offered as-is,
 without any warranty.
 ```
 ## 简介
-C++ 程序的一个全局变量（<!--指具有命名空间作用域的对象-->）的构造（<!--指调用构造函数-->）可能依赖于另一个全局变量，而全局变量构造的顺序取决于目标文件中变量定义的顺序，而后者取决于连接顺序。于是，不恰当的连接顺序可导致构造一个全局变量时，它所依赖的全局变量尚未构造。
+C++ 程序的一个全局变量
+
+[^1]: 指具有命名空间作用域的对象
+
+的构造
+
+[^2]: 指调用构造函数
+
+可能依赖于另一个全局变量，而全局变量构造的顺序取决于目标文件中变量定义的顺序，而后者取决于连接顺序。于是，不恰当的连接顺序可导致构造一个全局变量时，它所依赖的全局变量尚未构造。
 
 这可能会导致一系列难以解释的错误，以下是一个生动的虚构的例子：
 一个类乙需要使用“当前运行环境的库甲的版本”这个量，并且在构造时甲的版本是否达到了某个要求，如果达到了，则构造一个使用了甲的新特征的对象，如果没有，则构造一个不使用新特征的对象。实现的方式可能是指向实现的指针（参见https://zh.cppreference.com/w/cpp/language/pimpl ）。
@@ -29,10 +37,10 @@ C++ 程序的一个全局变量（<!--指具有命名空间作用域的对象-->
 第 3 条假设保证了`global_variable_t`可以使用 63 位储存指针，1 位储存`bool`型变量，这样做使`sizeof(global_variable_t)=8`，否则`sizeof(global_variable_t)=16`。第 4 条假设让`global_variable_t`无需考虑线程安全问题。
 
 ## 推荐使用方法
-<!--本文中的”方法“只有自然语言中的含义，需要使用其在面向对象程序设计中的含义时，一律用”成员函数“或”函数“替代。-->
+***本文中的”方法“只有自然语言中的含义，需要使用其在面向对象程序设计中的含义时，一律用”成员函数“或”函数“替代。***
 
-声明外部变量：`extern_global_variable(specifier,type,name)`[宏]
-声明其他全局变量：`global_variable(specifier,type,name,init)`[宏]
+- [ ] **声明外部变量**：`extern_global_variable(specifier,type,name)`[宏]
+- [ ] **声明其他全局变量**：`global_variable(specifier,type,name,init)`[宏]
 
 - `specifier`可以是`const`、`volatile`、`thread_local`及它们的组合，如果不需要可以留空。
 -  `type`是变量的类型，如`uint32_t`、`std::thread`、`(std::map<std::string,std::stack<void*>>)`，如果类型中有逗号，请使用括号“`()`”包裹类型。`type`应满足*可析构(Destructible)*要求。
@@ -91,9 +99,6 @@ what():  the circle is `b' <-- `a' <-- `b'
 ## 高级用法
 
 1. 不定义`extern_global_variable`和`global_variable`两个宏：在首次包含`global_variable.hpp`前定义宏`_LIB_SAFE_GLOBAL_VAR_NO_MACRO`
-
 2. 更改extern_global_variable和global_variable两个宏的名字：在 1 的基础上，定义宏：
-
-	(1)` <extern_global_variable的新名字> ____SGV_extern_global_variable`
-
-	(2) `<global_variable的新名字> ____SGV_global_variable`
+      - ` <extern_global_variable的新名字> ____SGV_extern_global_variable`
+      -  `<global_variable的新名字> ____SGV_global_variable`
