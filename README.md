@@ -90,5 +90,7 @@ what():  the circle is `b' <-- `a' <-- `b'
 1. 不定义`extern_global_variable`和`global_variable`两个宏：在首次包含`global_variable.hpp`前定义宏`_LIB_SAFE_GLOBAL_VAR_NO_MACRO`
 
 2. 更改extern_global_variable和global_variable两个宏的名字：在1的基础上，定义宏：
+
 	(1)` <extern_global_variable的新名字> ____SGV_extern_global_variable`
+
 	(2) `<global_variable的新名字> ____SGV_global_variable`
