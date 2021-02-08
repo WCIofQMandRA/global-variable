@@ -1,11 +1,13 @@
-# global variable
-```
-Copyright 2021 (C) 张子辰
+<!--Copyright 2021 (C) 张子辰
 Copying and distribution of this file, with or without modification,
 are permitted in any medium without royalty provided the copyright 
 notice and this notice are preserved. This file is offered as-is, 
-without any warranty.
-```
+without any warranty.-->
+
+# global variable
+
+当前版本：1.1.0		上一版本：1.0.0
+
 ## 简介
 C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构造(指调用构造函数)可能依赖于另一个全局变量，而全局变量构造的顺序取决于目标文件中变量定义的顺序，而后者取决于连接顺序。于是，不恰当的连接顺序可导致构造一个全局变量时，它所依赖的全局变量尚未构造。
 
@@ -31,13 +33,19 @@ C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构�
 ## 推荐使用方法
 ***本文中的“方法”只有自然语言中的含义，需要使用其在面向对象程序设计中的含义时，一律用“成员函数”或“函数”替代。***
 
-- [ ] **声明外部变量**：`extern_global_variable(specifier,type,name)`[宏]
-- [ ] **声明其他全局变量**：`global_variable(specifier,type,name,init)`[宏]
+- [ ] **声明/定义全局变量**：
+  1. `global_variable(specifier,type,name,init)`[宏]
+  2. `global_variable(specifier,type,name)`[宏]
+  
+- `specifier`可以是`const`、`volatile`、`thread_local`、`static`、`extern`及它们的组合，如果不需要可以留空。
 
-- `specifier`可以是`const`、`volatile`、`thread_local`及它们的组合，如果不需要可以留空。
--  `type`是变量的类型，如`uint32_t`、`std::thread`、`(std::map<std::string,std::stack<void*>>)`，如果类型中有逗号，请使用括号“`()`”包裹类型。`type`应满足*可析构(Destructible)*要求。
+- `type`是变量的类型，如`uint32_t`、`std::thread`、`(std::map<std::string,std::stack<void*>>)`，如果类型中有逗号，请使用括号“`()`”包裹类型。`type`应满足*可析构(Destructible)*要求。
+
 - `name`是变量的名称，应满足 C++ 语言对变量名的要求。
-- `init`是初始化方法，是一个返回值是（或可自动转化为）`type`的表达式，如果不需要初始化（对于这种情况，你不应该使用本库，而应直接定义全局变量），可以使用“`{}`”或“`type()`”，  如果表达式中有逗号，请使用括号“`()`”包裹表达式。
+
+- `init`是初始化方法，是一个返回值是（或可自动转化为）`type`的表达式， 如果表达式中有逗号，请使用括号“`()`”包裹表达式。
+
+目前，试图在声明时初始化外部变量将引起编译错误，在之后的版本中，这将导致警告，且实际行为是定义并初始化非外部变量。现在不这么处理，是因为我尚未找到在所有编译器上合理地产生自定义警告的方法。
 
 ## 具名要求
 ### *初始化器(Initalizer)* 
@@ -47,8 +55,9 @@ C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构�
 2. `Tp`满足*可析构(Destructible)* 要求；
 3. `Tp`包含公有成员函数`T operator()()`，`T`被称为`Tp`的**初始化类型**。
 
-## global_variable_t
-`template <typename Tp,typename Init> class global_variable_t`[类模板]
+## 类
+### global_variable_t
+- [ ] `template <typename Tp,typename Init> class global_variable_t`[类模板]
 
 包装一个可能在构造前使用的全局变量。`global_variable_t`保证，即使未构造也能正常使用，只要假设 1、2 成立。
 
@@ -91,7 +100,29 @@ what():  the circle is `b' <-- `a' <-- `b'
 
 ## 高级用法
 
-1. 不定义`extern_global_variable`和`global_variable`两个宏：在首次包含`global_variable.hpp`前定义宏`_LIB_SAFE_GLOBAL_VAR_NO_MACRO`
-2. 更改extern_global_variable和global_variable两个宏的名字：在 1 的基础上，定义宏：
-      - ` <extern_global_variable的新名字> ____SGV_extern_global_variable`
+1. 不定义宏`global_variable`：在首次包含`global_variable.hpp`前定义宏`_LIB_SAFE_GLOBAL_VAR_NO_MACRO`
+2. 更改宏global_variable的名字：在 1 的基础上，定义宏：
       -  `<global_variable的新名字> ____SGV_global_variable`
+
+## 版本检测
+
+```cpp
+#define ____SGV_VERS_MAJOR 1ull
+#define ____SGV_VERS_MINOR 1ull
+#define ____SGV_VERS_PATCHLEVEL 0ull
+```
+
+## 更新与兼容性
+
+1. 弃用了`extern_global_variable`宏，在`global_variable`，的`specifier`中加入`extern `即可声明外部变量；
+2. 允许去掉`global_variable`的`init`参数而不初始化变量，注意：
+   - 是 **去掉** 而非 **留空** ，
+   - 不得初始化外部变量；
+3. 修改文档的错误：`global_variable`的`specifier`中可以含有`static`。
+
+本版本（1.1.0）与 v1.0.0 源代码兼容，且二进制兼容，为此宏`extern_globale_variable`被保留，但现在，它是宏`globale_variable`的别名：
+
+```cpp
+#define ____SGV_extern_global_variable ____SGV_global_variable
+```
+
