@@ -39,7 +39,7 @@ C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构�
   
 - `specifier`可以是`const`、`volatile`、`thread_local`、`static`、`extern`及它们的组合，如果不需要可以留空。
 
-- `type`是变量的类型，如`uint32_t`、`std::thread`、`(std::map<std::string,std::stack<void*>>)`，如果类型中有逗号，请使用括号“`()`”包裹类型。`type`应满足*可析构(Destructible)*要求。
+- `type`是变量的类型，如`uint32_t`、`std::thread`、`(std::map<std::string,std::stack<void*>>)`，如果类型中有逗号，请使用括号“`()`”包裹类型。`type`应满足*可析构(Destructible)* 要求。
 
 - `name`是变量的名称，应满足 C++ 语言对变量名的要求。
 
