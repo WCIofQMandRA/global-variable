@@ -1,5 +1,5 @@
 //global_variable.hpp
-//version 1.1.0
+//version 2.0.0
 //Copyright (C) 2021 张子辰
 //安全地处理可能在构造前使用的全局变量
 
@@ -7,17 +7,16 @@
 //	are permitted in any medium without royalty provided the copyright
 //	notice and this notice are preserved.  This file is offered as-is,
 //	without any warranty.
+//TODO: 详细分析specifier
 
+#ifndef ____SGV_global_variable
 #include <stdexcept>
-#include <typeinfo>
-#include <string>
-#include <cstring>
 #if defined(__GNUC__)||defined(__clang__)
 #include <cxxabi.h>
 #endif
 
-#define ____SGV_VERS_MAJOR 1ull
-#define ____SGV_VERS_MINOR 1ull
+#define ____SGV_VERS_MAJOR 2ull
+#define ____SGV_VERS_MINOR 0ull
 #define ____SGV_VERS_PATCHLEVEL 0ull
 
 class circular_initialization:public std::logic_error
@@ -31,7 +30,11 @@ public:
 		:std::logic_error(other){}
 };
 
-template <typename Tp,typename Init>
+#if defined(__cpp_nontype_template_parameter_auto) || __cplusplus>=201703L
+template <typename Tp,const auto &Init,const char*const*const name=nullptr>
+#else
+template <typename Tp,Tp (&Init)(),const char*const*const name=nullptr>
+#endif
 class global_variable_t
 {
 private:
@@ -44,23 +47,8 @@ private:
 #endif
 	std::string variable_name()const
 	{
-		using namespace std;
-		string name;
-#if defined(__GNUC__)||defined(__clang__)
-		char *realname;
-		int status;
-		realname=abi::__cxa_demangle(typeid(Init).name(),nullptr,nullptr,&status);
-		name=realname;
-		free(realname);	
-#else
-		name=typeid(Init).name();
-#endif
-		if(name.length()>22&&strncmp(name.data(),"_____SGV_",8)==0)
-		{
-			name=name.substr(9,name.length()-22);
-		}
-		else name="<unknown variable:"+name+">";
-		return name;
+		if(name!=nullptr)return *name;
+		else return "<unknown variable>";
 	}
 	void init()const
 	{
@@ -71,12 +59,12 @@ private:
 				throw circular_initialization("the circle is `"+variable_name()+"'");
 			try
 			{
-				d=reinterpret_cast<size_t>(new Tp(Init()()));
+				d=reinterpret_cast<size_t>(new Tp(Init()));
 			}
 			catch(circular_initialization &err)
 			{
 				using namespace std;
-				throw circular_initialization(err.what()+" <-- `"s+variable_name()+"'");
+				throw circular_initialization(err.what()+string(" <-- `")+variable_name()+"'");
 			}
 			initizing=false;
 		}
@@ -154,21 +142,31 @@ public:
 #define ____SGV_HAS_extern_IMPL(...) 1
 
 #define ____SGV_EGV_ARG3(specifier,type,name)\
-	class _____SGV_##name##_helper_class;\
-	specifier global_variable_t<____SGV_TRY_REMOVE_PARENS(type),_____SGV_##name##_helper_class> name
+	____SGV_TRY_REMOVE_PARENS(type) _____SGV_##name##_helper_function();\
+	extern const char *_____SGV_##name##_name;\
+	specifier global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+	_____SGV_##name##_helper_function,&_____SGV_##name##_name> name
 
 #define ____SGV_EGV_ARG4(specifier,type,name,init)\
-	static_assert(false,"extern variable should not be initialized")
+	____SGV_TRY_REMOVE_PARENS(type) _____SGV_##name##_helper_function()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *_____SGV_##name##_name=#name;\
+	specifier global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		_____SGV_##name##_helper_function,&_____SGV_##name##_name> name
 
 #define ____SGV_GV_ARG3(specifier,type,name)\
-	class _____SGV_##name##_helper_class\
-	{public:____SGV_TRY_REMOVE_PARENS(type) operator()(){return {};}};\
-	specifier global_variable_t<____SGV_TRY_REMOVE_PARENS(type),_____SGV_##name##_helper_class> name
+	____SGV_TRY_REMOVE_PARENS(type) _____SGV_##name##_helper_function()\
+		{return {};}\
+	const char *_____SGV_##name##_name=#name;\
+	specifier global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		_____SGV_##name##_helper_function,&_____SGV_##name##_name> name
 
 #define ____SGV_GV_ARG4(specifier,type,name,init)\
-	class _____SGV_##name##_helper_class\
-	{public:____SGV_TRY_REMOVE_PARENS(type) operator()(){return ____SGV_TRY_REMOVE_PARENS(init);}};\
-	specifier global_variable_t<____SGV_TRY_REMOVE_PARENS(type),_____SGV_##name##_helper_class> name
+	____SGV_TRY_REMOVE_PARENS(type) _____SGV_##name##_helper_function()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *_____SGV_##name##_name=#name;\
+	specifier global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		_____SGV_##name##_helper_function,&_____SGV_##name##_name> name
 
 #define ____SGV_global_variable_ARG3(specifier,type,name)\
 	____SGV_IF(____SGV_CHECK(specifier),____SGV_EGV_ARG3,____SGV_GV_ARG3)\
@@ -180,11 +178,13 @@ public:
 
 #define ____SGV_global_variable(...) ____SGV_CONCAT(____SGV_global_variable_ARG,____SGV_GET_7(__VA_ARGS__,7,6,5,4,3,2,1))(__VA_ARGS__)
 
-//兼容v1.0.0
+//源代码兼容v1.0.0
 #define ____SGV_extern_global_variable ____SGV_global_variable
 
 #ifndef _LIB_SAFE_GLOBAL_VAR_NO_MACRO
-#	//兼容v1.0.0
+#	//源代码兼容v1.0.0
 #	define extern_global_variable ____SGV_extern_global_variable
 #	define global_variable ____SGV_global_variable
 #endif
+
+#endif// !defined(____SGV_global_variable)
