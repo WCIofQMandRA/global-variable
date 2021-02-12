@@ -55,7 +55,7 @@ private:
 		{
 			if(!initizing)initizing=true;
 			else
-				throw circular_initialization("the circle is `"+variable_name()+"'");
+				throw circular_initialization("the circle is '"+variable_name()+"'");
 			try
 			{
 				d=reinterpret_cast<size_t>(new Tp(Init()));
@@ -63,7 +63,7 @@ private:
 			catch(circular_initialization &err)
 			{
 				using namespace std;
-				throw circular_initialization(err.what()+string(" <-- `")+variable_name()+"'");
+				throw circular_initialization(err.what()+string(" <-- '")+variable_name()+"'");
 			}
 			initizing=false;
 		}
@@ -265,7 +265,7 @@ public:
 	extern global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10000_ARG3(type,name,init)\
-	[[deprecated("TODO")]]\
+	[[deprecated("'" #name "' initialized and declared 'extern'")]]\
 	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
@@ -283,13 +283,13 @@ public:
 
 //extern static
 #define ____SGV_GV11000_ARG2(type,name)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #define ____SGV_GV11000_ARG3(type,name,init)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 
 //const
 #define ____SGV_GV00100_ARG2(type,name)\
-	static_assert(false,"TODO")
+	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV00100_ARG3(type,name,init)\
 	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
@@ -314,7 +314,7 @@ public:
 
 //static const
 #define ____SGV_GV01100_ARG2(type,name)\
-	static_assert(false,"TODO")
+	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV01100_ARG3(type,name,init)\
 	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
@@ -324,9 +324,9 @@ public:
 
 //extern static const
 #define ____SGV_GV11100_ARG2(type,name)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #define ____SGV_GV11100_ARG3(type,name,init)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 
 //volatile
 #define ____SGV_GV00010_ARG2(type,name) ____SGV_GV00010_ARG3(type,name,{})
@@ -344,7 +344,7 @@ public:
 	extern volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10010_ARG3(type,name,init)\
-	[[deprecated("TODO")]]\
+	[[deprecated("'" #name "' initialized and declared 'extern'")]]\
 	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
@@ -362,13 +362,13 @@ public:
 
 //extern static volatile
 #define ____SGV_GV11010_ARG2(type,name)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #define ____SGV_GV11010_ARG3(type,name,init)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 
 //const volatile
 #define ____SGV_GV00110_ARG2(type,name)\
-	static_assert(false,"TODO")
+	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV00110_ARG3(type,name,init)\
 	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
@@ -393,7 +393,7 @@ public:
 
 //static const volatile
 #define ____SGV_GV01110_ARG2(type,name)\
-	static_assert(false,"TODO")
+	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV01110_ARG3(type,name,init)\
 	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
@@ -403,9 +403,9 @@ public:
 
 //extern static const volatile
 #define ____SGV_GV11110_ARG2(type,name)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #define ____SGV_GV11110_ARG3(type,name,init)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 
 //thread_local
 #define ____SGV_GV00001_ARG2(type,name) ____SGV_GV00001_ARG2(type,name,())
@@ -423,7 +423,7 @@ public:
 	extern thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10001_ARG3(type,name,init)\
-	[[deprecated("TODO")]]\
+	[[deprecated("'" #name "' initialized and declared 'extern'")]]\
 	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
@@ -441,13 +441,13 @@ public:
 
 //extern static thread_local
 #define ____SGV_GV11001_ARG2(type,name)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #define ____SGV_GV11001_ARG3(type,name,init)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 
 //const thread_local
 #define ____SGV_GV00101_ARG2(type,name)\
-	static_assert(false,"TODO")
+	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV00101_ARG3(type,name,init)\
 	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
@@ -472,7 +472,7 @@ public:
 
 //static const thread_local
 #define ____SGV_GV01101_ARG2(type,name)\
-	static_assert(false,"TODO")
+	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV01101_ARG3(type,name,init)\
 	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
@@ -482,9 +482,9 @@ public:
 
 //extern static const thread_local
 #define ____SGV_GV11101_ARG2(type,name)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #define ____SGV_GV11101_ARG3(type,name,init)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 
 //volatile thread_local
 #define ____SGV_GV00011_ARG2(type,name) ____SGV_GV00011_ARG3(type,name,{})
@@ -502,7 +502,7 @@ public:
 	extern volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10011_ARG3(type,name,init)\
-	[[deprecated("TODO")]]\
+	[[deprecated("'" #name "' initialized and declared 'extern'")]]\
 	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
@@ -520,13 +520,13 @@ public:
 
 //extern static volatile thread_local
 #define ____SGV_GV11011_ARG2(type,name)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #define ____SGV_GV11011_ARG3(type,name,init)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 
 //const volatile thread_local
 #define ____SGV_GV00111_ARG2(type,name)\
-	static_assert(false,"TODO")
+	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV00111_ARG3(type,name,init)\
 	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
@@ -551,7 +551,7 @@ public:
 
 //static const volatile thread_local
 #define ____SGV_GV01111_ARG2(type,name)\
-	static_assert(false,"TODO")
+	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV01111_ARG3(type,name,init)\
 	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
@@ -561,9 +561,9 @@ public:
 
 //extern static const volatile thread_local
 #define ____SGV_GV11111_ARG2(type,name)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #define ____SGV_GV11111_ARG3(type,name,init)\
-	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
+	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #endif// if 0/1
 
 //4重载
