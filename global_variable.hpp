@@ -10,9 +10,6 @@
 
 #ifndef ____SGV_global_variable
 #include <stdexcept>
-#if defined(__GNUC__)||defined(__clang__)
-#include <cxxabi.h>
-#endif
 
 #define ____SGV_VERS_MAJOR 2ull
 #define ____SGV_VERS_MINOR 0ull
@@ -46,7 +43,7 @@ private:
 #endif
 	std::string variable_name()const
 	{
-		if(name!=nullptr)return *name;
+		if(name!=nullptr&&*name!=nullptr)return *name;
 		else return "<unknown variable>";
 	}
 	void init()const
@@ -118,9 +115,9 @@ public:
 #define ____SGV_GET_7(_0,_1,_2,_3,_4,_5,_6,_7,...) _7
 
 //判断是否有括号
-#define ____SGV_COMMA_V(...) ,
 #define ____SGV_IS_PARENS(x) ____SGV_IS_PARENS_IMPL(____SGV_COMMA_V x)
 #define ____SGV_IS_PARENS_IMPL(...) ____SGV_GET_2(__VA_ARGS__,1,0,0)
+#define ____SGV_COMMA_V(...) ,
 
 //判断是否为空，假定x不是元组
 #define ____SGV_EMPTY_1(x) ____SGV_EMPTY_1_IMPL(____SGV_COMMA_V x(),1,0)
@@ -219,7 +216,7 @@ public:
 #define ____SGV_HAS3_IMPL(...) 0
 #define ____SGV_HAS3_volatile_IMPL(...) 1
 
-//检测限定符中是否有volatile
+//检测限定符中是否有thread_local
 #define ____SGV_CHECK4(...) ____SGV_HAS4_##__VA_ARGS__)
 #define ____SGV_CHECK41(...) ____SGV_HAS4_##__VA_ARGS__)
 #define ____SGV_CHECK42(...) ____SGV_HAS4_##__VA_ARGS__)
