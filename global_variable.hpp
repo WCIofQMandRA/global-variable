@@ -27,9 +27,9 @@ public:
 };
 
 #if defined(__cpp_nontype_template_parameter_auto) || __cplusplus>=201703L
-template <typename Tp,const auto &Init,const char*const*const name=nullptr>
+template <typename Tp,const auto &Init,const char*const*const Name=nullptr>
 #else
-template <typename Tp,Tp (&Init)(),const char*const*const name=nullptr>
+template <typename Tp,Tp (&Init)(),const char*const*const Name=nullptr>
 #endif
 class global_variable_t
 {
@@ -43,7 +43,7 @@ private:
 #endif
 	std::string variable_name()const
 	{
-		if(name!=nullptr&&*name!=nullptr)return *name;
+		if(Name!=nullptr&&*Name!=nullptr)return *Name;
 		else return "<unknown variable>";
 	}
 	void init()const
