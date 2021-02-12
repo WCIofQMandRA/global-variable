@@ -7,7 +7,6 @@
 //	are permitted in any medium without royalty provided the copyright
 //	notice and this notice are preserved.  This file is offered as-is,
 //	without any warranty.
-//TODO: 详细分析specifier
 
 #ifndef ____SGV_global_variable
 #include <stdexcept>
@@ -247,18 +246,40 @@ public:
 	____SGV_CONCAT5(____SGV_CHECK0(spec),____SGV_CHECK1(spec),\
 	____SGV_CHECK2(spec),____SGV_CHECK3(spec),____SGV_CHECK4(spec))
 
-#if 0
+//当参数传递到这些宏时，已经过至少一次转发，已完全展开，所以无需使用延迟拼接
+#if 1
 //
-#define ____SGV_GV00000_ARG2(type,name)
-#define ____SGV_GV00000_ARG3(type,name,init)
+#define ____SGV_GV00000_ARG2(type,name) ____SGV_GV00000_ARG3(type,name,{})
+#define ____SGV_GV00000_ARG3(type,name,init)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+
 
 //extern
-#define ____SGV_GV10000_ARG2(type,name)
-#define ____SGV_GV10000_ARG3(type,name,init)
+#define ____SGV_GV10000_ARG2(type,name)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	extern const char *____SGV_variable_name_##name;\
+	extern global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+#define ____SGV_GV10000_ARG3(type,name,init)\
+	[[deprecated("TODO")]]\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //static
-#define ____SGV_GV01000_ARG2(type,name)
-#define ____SGV_GV01000_ARG3(type,name,init)
+#define ____SGV_GV01000_ARG2(type,name) ____SGV_GV01000_ARG3(type,name,{})
+#define ____SGV_GV01000_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	static global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern static
 #define ____SGV_GV11000_ARG2(type,name)\
@@ -267,16 +288,39 @@ public:
 	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
 
 //const
-#define ____SGV_GV00100_ARG2(type,name)
-#define ____SGV_GV00100_ARG3(type,name,init)
+#define ____SGV_GV00100_ARG2(type,name)\
+	static_assert(false,"TODO")
+#define ____SGV_GV00100_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	const global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern const
-#define ____SGV_GV10100_ARG2(type,name)
-#define ____SGV_GV10100_ARG3(type,name,init)
+#define ____SGV_GV10100_ARG2(type,name)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	extern const char *____SGV_variable_name_##name;\
+	extern const global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+#define ____SGV_GV10100_ARG3(type,name,init)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	extern const global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name;\
+	const global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //static const
-#define ____SGV_GV01100_ARG2(type,name)
-#define ____SGV_GV01100_ARG3(type,name,init)
+#define ____SGV_GV01100_ARG2(type,name)\
+	static_assert(false,"TODO")
+#define ____SGV_GV01100_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	const global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern static const
 #define ____SGV_GV11100_ARG2(type,name)\
@@ -285,16 +329,36 @@ public:
 	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
 
 //volatile
-#define ____SGV_GV00010_ARG2(type,name)
-#define ____SGV_GV00010_ARG3(type,name,init)
+#define ____SGV_GV00010_ARG2(type,name) ____SGV_GV00010_ARG3(type,name,{})
+#define ____SGV_GV00010_ARG3(type,name,init)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern volatile
-#define ____SGV_GV10010_ARG2(type,name)
-#define ____SGV_GV10010_ARG3(type,name,init)
+#define ____SGV_GV10010_ARG2(type,name)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	extern const char *____SGV_variable_name_##name;\
+	extern volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+#define ____SGV_GV10010_ARG3(type,name,init)\
+	[[deprecated("TODO")]]\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //static volatile
-#define ____SGV_GV01010_ARG2(type,name)
-#define ____SGV_GV01010_ARG3(type,name,init)
+#define ____SGV_GV01010_ARG2(type,name) ____SGV_GV01010_ARG3(type,name,{})
+#define ____SGV_GV01010_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	static volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern static volatile
 #define ____SGV_GV11010_ARG2(type,name)\
@@ -303,16 +367,39 @@ public:
 	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
 
 //const volatile
-#define ____SGV_GV00110_ARG2(type,name)
-#define ____SGV_GV00110_ARG3(type,name,init)
+#define ____SGV_GV00110_ARG2(type,name)\
+	static_assert(false,"TODO")
+#define ____SGV_GV00110_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	const volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern const volatile
-#define ____SGV_GV10110_ARG2(type,name)
-#define ____SGV_GV10110_ARG3(type,name,init)
+#define ____SGV_GV10110_ARG2(type,name)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	extern const char *____SGV_variable_name_##name;\
+	extern const volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+#define ____SGV_GV10110_ARG3(type,name,init)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	extern const volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name;\
+	const volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //static const volatile
-#define ____SGV_GV01110_ARG2(type,name)
-#define ____SGV_GV01110_ARG3(type,name,init)
+#define ____SGV_GV01110_ARG2(type,name)\
+	static_assert(false,"TODO")
+#define ____SGV_GV01110_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	const volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern static const volatile
 #define ____SGV_GV11110_ARG2(type,name)\
@@ -321,16 +408,36 @@ public:
 	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
 
 //thread_local
-#define ____SGV_GV00001_ARG2(type,name)
-#define ____SGV_GV00001_ARG3(type,name,init)
+#define ____SGV_GV00001_ARG2(type,name) ____SGV_GV00001_ARG2(type,name,())
+#define ____SGV_GV00001_ARG3(type,name,init)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern thread_local
-#define ____SGV_GV10001_ARG2(type,name)
-#define ____SGV_GV10001_ARG3(type,name,init)
+#define ____SGV_GV10001_ARG2(type,name)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	extern const char *____SGV_variable_name_##name;\
+	extern thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+#define ____SGV_GV10001_ARG3(type,name,init)\
+	[[deprecated("TODO")]]\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //static thread_local
-#define ____SGV_GV01001_ARG2(type,name)
-#define ____SGV_GV01001_ARG3(type,name,init)
+#define ____SGV_GV01001_ARG2(type,name) ____SGV_GV01001_ARG3(type,name,{})
+#define ____SGV_GV01001_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	static thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern static thread_local
 #define ____SGV_GV11001_ARG2(type,name)\
@@ -339,16 +446,39 @@ public:
 	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
 
 //const thread_local
-#define ____SGV_GV00101_ARG2(type,name)
-#define ____SGV_GV00101_ARG3(type,name,init)
+#define ____SGV_GV00101_ARG2(type,name)\
+	static_assert(false,"TODO")
+#define ____SGV_GV00101_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	const thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern const thread_local
-#define ____SGV_GV10101_ARG2(type,name)
-#define ____SGV_GV10101_ARG3(type,name,init)
+#define ____SGV_GV10101_ARG2(type,name)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	extern const char *____SGV_variable_name_##name;\
+	extern const thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+#define ____SGV_GV10101_ARG3(type,name,init)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	extern const thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name;\
+	const thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //static const thread_local
-#define ____SGV_GV01101_ARG2(type,name)
-#define ____SGV_GV01101_ARG3(type,name,init)
+#define ____SGV_GV01101_ARG2(type,name)\
+	static_assert(false,"TODO")
+#define ____SGV_GV01101_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	const thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern static const thread_local
 #define ____SGV_GV11101_ARG2(type,name)\
@@ -357,16 +487,36 @@ public:
 	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
 
 //volatile thread_local
-#define ____SGV_GV00011_ARG2(type,name)
-#define ____SGV_GV00011_ARG3(type,name,init)
+#define ____SGV_GV00011_ARG2(type,name) ____SGV_GV00011_ARG3(type,name,{})
+#define ____SGV_GV00011_ARG3(type,name,init)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern volatile thread_local
-#define ____SGV_GV10011_ARG2(type,name)
-#define ____SGV_GV10011_ARG3(type,name,init)
+#define ____SGV_GV10011_ARG2(type,name)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	extern const char *____SGV_variable_name_##name;\
+	extern volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+#define ____SGV_GV10011_ARG3(type,name,init)\
+	[[deprecated("TODO")]]\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //static volatile thread_local
-#define ____SGV_GV01011_ARG2(type,name)
-#define ____SGV_GV01011_ARG3(type,name,init)
+#define ____SGV_GV01011_ARG2(type,name) ____SGV_GV01011_ARG3(type,name,{})
+#define ____SGV_GV01011_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	static volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern static volatile thread_local
 #define ____SGV_GV11011_ARG2(type,name)\
@@ -375,29 +525,46 @@ public:
 	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
 
 //const volatile thread_local
-#define ____SGV_GV00111_ARG2(type,name)
-#define ____SGV_GV00111_ARG3(type,name,init)
-
+#define ____SGV_GV00111_ARG2(type,name)\
+	static_assert(false,"TODO")
+#define ____SGV_GV00111_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	const volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+	
 //extern const volatile thread_local
-#define ____SGV_GV10111_ARG2(type,name)
-#define ____SGV_GV10111_ARG3(type,name,init)
+#define ____SGV_GV10111_ARG2(type,name)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	extern const char *____SGV_variable_name_##name;\
+	extern const volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
+#define ____SGV_GV10111_ARG3(type,name,init)\
+	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	const char *____SGV_variable_name_##name=#name;\
+	extern const volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name;\
+	const volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //static const volatile thread_local
-#define ____SGV_GV01111_ARG2(type,name)
-#define ____SGV_GV01111_ARG3(type,name,init)
+#define ____SGV_GV01111_ARG2(type,name)\
+	static_assert(false,"TODO")
+#define ____SGV_GV01111_ARG3(type,name,init)\
+	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+		{return ____SGV_TRY_REMOVE_PARENS(init);}\
+	static const char *____SGV_variable_name_##name=#name;\
+	const volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
+		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 
 //extern static const volatile thread_local
 #define ____SGV_GV11111_ARG2(type,name)\
 	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
 #define ____SGV_GV11111_ARG3(type,name,init)\
 	static_assert(false,"conflicting specifiers in declaration of `" #name "' (extern static)")
-#endif
-//#define ____SGV_GV_ARG4(specifier,type,name,init)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_##name##_helper_function()\
-		{return ____SGV_TRY_REMOVE_PARENS(init);}\
-	const char *____SGV_##name##_name=#name;\
-	specifier global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
-		____SGV_##name##_helper_function,&____SGV_##name##_name> name
+#endif// if 0/1
 
 //4重载
 #define ____SGV_global_variable(...) ____SGV_CONCAT(____SGV_GV_ARG,____SGV_GET_7(__VA_ARGS__,7,6,5,4,3,2,1))(__VA_ARGS__)
