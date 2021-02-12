@@ -33,7 +33,7 @@ C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构�
 - [ ] `global_variable(type,name,init)`	[宏]
 - [ ] `global_variable(name,init)`	[宏]
 
-声明/定义全局变量。`global_variable`声明/定义的全局变量在逻辑上等效于`type specifier name=init`。`global_variable`尽力给出与 C++ 编译器给出的关于其等效形式的诊断相近的诊断。
+声明/定义全局变量。`global_variable`声明/定义的全局变量在逻辑上等效于`type specifier name=init`，但使用这些全局变量的方法类型于使用指针。`global_variable`尽力给出与 C++ 编译器给出的关于其等效形式的诊断相近的诊断。
 
 - `specifier`可以是`const`、`volatile`、`thread_local`、`static`、`extern`及它们的组合。例如，`static int`的`specifier`是`static`，`const int*`不含`specifier`，`extern int *const`的`specifier`是`extern const`。*`specifier`可以留空。[v2.0.0 中弃用]*
 
@@ -45,23 +45,38 @@ C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构�
 
 ***注：本文中的“方法”只有自然语言中的含义，需要使用其在面向对象程序设计中的含义时，一律用“成员函数”或“函数”替代。***
 
-#### 示例
-```cpp
-global_variable(int,a);	//等效于 int a;
-global_variable(const,(std::pair<int,long>),b,({2,3.0}));	//等效于 const std::pair<int,long> b={2,3.0};
-global_variable(extern,double,c);	//等效于 extern double c;
-global_variable(long long,d,0xFFFFFFFFFF);	//等效于 long long d=0xFFFFFFFFFF;
-```
 #### 诊断信息
 `global_variable`通过 static_assert 和 deprecated 属性（这是要求 C++ 14 的原因），分别对用户的不良用法给出错误和警告等诊断信息。
 1. **企图在`specifier`中同时包含`static`和`extern`** ， 错误：conflicting specifiers in declaration of '<变量名>' (extern static)；
 2. **在定义常量时不进行初始化**，错误：uninitialized 'const  <变量名> '；
-3. **在声明非const的外部变量时初始化**，警告：''<变量名>'' initialized and declared 'extern'。
+3. **在声明非 const 的外部变量时初始化**，警告：'<变量名>' initialized and declared 'extern'。
 
 #### 已知缺陷
 1. 变量必须能够以`type name`的形式声明/定义，否则将引起编译错误。如`global_variable(void(*)(),a,nullptr);`将引起编译错误，因为`global_variable`的展开形式试图使用`type <函数名>(){return init;}`定义函数。
 2. 如果`specifier`参数中，相同的限定符出现了多次，宏展开将失败，且不产生由本库设计的诊断信息。
+3. 外部常量（`extern const`）在定义时必须使用`global_variable(extern const,type,name,init);`，而不能使用`global_variable(const,type,name,init);`。
 
+#### 示例
+```cpp
+#include <iostream>
+#include <global_variable.hpp>
+global_variable(int,a);	//equal to int a;
+global_variable(extern const,(std::pair<int,double>),b);
+global_variable(int,b_first,b->first);	//initalize before b
+global_variable(extern const,(std::pair<int,double>),b,({2,3.01}));	
+global_variable(extern,double,c);
+global_variable(long long,d,0xFFFFFFFFFF);
+
+int main()
+{
+	std::cout<<*b_first<<" "<<b->second<<" "<<*d<<std::endl;
+//	std::cout<<*c;//Error: undefined reference to `c'
+}
+```
+输出：
+```
+2 3.01 1099511627775
+```
 ## 类
 ### global_variable_t
 - [ ] `template <typename Tp,Tp (&Init)(),const char*const*const Name=nullptr> class global_variable_t`	[类模板] *[C++ 14]*
@@ -69,7 +84,7 @@ global_variable(long long,d,0xFFFFFFFFFF);	//等效于 long long d=0xFFFFFFFFFF;
 
 包装一个可能在构造前使用的全局变量。`global_variable_t`保证，即使未构造也能正常使用，只要假设 1、2 成立。
 
-- `Tp`: 包装的全局对象的类型，满足*可析构(Destructible)* 要求和*可移动构造
+- `Tp`: 包装的全局变量的类型，满足*可析构(Destructible)* 要求和*可移动构造
 	(MoveConstructible)* 要求。
 	
 - `Init`: 初始化全局变量的方法，<u>是函数指针</u>[C++ 14]　<u>满足*可调用 (Callable)* 要求</u> [C++ 17 起]，更进一步，`Init`接受`0`个参数，返回值的类型是`Tp`。
@@ -114,12 +129,12 @@ what():  the circle is 'b' <-- 'a' <-- 'b'
       -  `<global_variable的新名字> ____SGV_global_variable`
 
 ## 内部
-**本节提到的特征并非本库的接口，它们很可能会在未来的版本中改变，且这些变更不一定会被文档提到。这些特征不一定带有描述，且带有的描述不一定容易理解。使用者应尽量避免使用它们。在每个特征后，会附上一个介于0-2的数字，表示这个特征在后续版本中保持的可能性，数字越大，该特征越可能被保持，2表示该特征几乎不可能改变，0表示作者不试图保持该特征的稳定。本节没有列出所有的内部特征。**
+**本节提到的特征并非本库的接口，它们很可能会在未来的版本中改变，且这些变更不一定会被文档提到。这些特征不一定带有描述，且带有的描述不一定容易理解。使用者应尽量避免使用它们。在每个特征后，会附上一个介于 0-2 的数字，表示这个特征在后续版本中被保持的可能性，数字越大，该特征越可能被保持，2 表示该特征几乎不可能改变，0 表示作者不试图保持该特征的稳定。本节并没有列出所有的内部特征。**
 
 - `____SGV_CONCAT(x,y)`	[宏, **2**]	将`x`、`y`的展开拼接
 - `____SGV_CONCAT3(x,y,z)` [宏, **0**]
 - `____SGV_CONCAT5(x,y,z,w,v)` [宏, **0**]
-- `____SGV_IF(STA,THEN,ELSE)` [宏, **2**]	如果`STA`展开后为`1`则展开为`THEN`；如果`STA`展开为`0`则展开为`ELSE`
+- `____SGV_IF(STA,THEN,ELSE)` [宏, **2**]	如果`STA`展开后为`1`，则展开为`THEN`；如果`STA`展开为`0`，则展开为`ELSE`
 - `____SGV_GET_2(...)` [宏, **1**]	获取变参数宏的第 2 个参数
 - `____SGV_GET_7(...)` [宏, **0**]
 - `____SGV_IS_PARENS(x)` [宏, **1**]	判断`x`是否为元组
@@ -170,4 +185,4 @@ what():  the circle is 'b' <-- 'a' <-- 'b'
 5. 在声明外部变量时初始化将导致警告，而非错误；
 6. 在`specifier`发生冲突时，尝试通过`static_assert`和`deprecated`属性给出诊断信息。
 
-本版本（2.0.0）与 v1.x 源代码兼容，但**不**二进制兼容。后续的版本可能会移除与v1.0.0的源代码兼容性，毕竟v1.0.0并未发布过。
+本版本（2.0.0）与 v1.x 源代码兼容，但**不**二进制兼容。后续的版本可能会移除与v1.0.0的源代码兼容性，毕竟v1.0.0并未发布过。为了解决一个已知问题，下一个版本可能与本版本**不**二进制兼容。
