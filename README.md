@@ -8,10 +8,10 @@ without any warranty.-->
 
 当前版本：2.0.1（未完成）			上一版本：2.0.0
 
-C++ 语言版本要求：C++ 14、C++ 17 或 C++ 20
+C++ 语言版本要求：C++ 14、C++ 17 或 C++ 20 （对于大多数编译器，指定语言标准为 C++ 11 也能通过编译）
 
 ## 简介
-C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构造(指调用构造函数)可能依赖于另一个全局变量，而全局变量构造的顺序取决于目标文件中变量定义的顺序，而后者取决于连接顺序。于是，不恰当的连接顺序可导致构造一个全局变量时，它所依赖的全局变量尚未构造。
+C++ 程序的一个全局变量（指具有命名空间作用域的对象）的构造（指调用构造函数）可能依赖于另一个全局变量，而全局变量构造的顺序取决于目标文件中变量定义的顺序，而后者取决于连接顺序。于是，不恰当的连接顺序可导致构造一个全局变量时，它所依赖的全局变量尚未构造。
 
 本库提供的类模板、宏可协助程序设计者安全地处理可能在构造前使用的全局变量。
 
@@ -52,14 +52,14 @@ C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构�
 3. **在声明非 const 的外部变量时初始化**，警告：'<变量名>' initialized and declared 'extern'。
 
 #### 已知缺陷
-1. 变量必须能够以`type name`的形式声明/定义，否则将引起编译错误。如`global_variable(void(*)(),a,nullptr);`将引起编译错误，因为`global_variable`的展开形式试图使用`type <函数名>(){return init;}`定义函数。
-2. 如果`specifier`参数中，相同的限定符出现了多次，宏展开将失败，且不产生由本库设计的诊断信息。
-3. 外部常量（`extern const`）在定义时必须使用`global_variable(extern const,type,name,init);`，而不能使用`global_variable(const,type,name,init);`。
+1. 如果`specifier`参数中，相同的限定符出现了多次，宏展开将失败，且不产生由本库设计的诊断信息。
+2. 外部常量（`extern const`）在定义时必须使用`global_variable(extern const,type,name,init);`，而不能使用`global_variable(const,type,name,init);`。
 
 #### 示例
 ```cpp
 #include <iostream>
 #include <utility>
+#include <string>
 #include <global_variable.hpp>
 global_variable(int,a);	//equal to int a;
 global_variable(extern const,(std::pair<int,double>),b);
@@ -69,23 +69,28 @@ global_variable(extern,double,c);
 global_variable(long long,d,0xFFFFFFFFFF);
 //global_variable(const,int,e);//error: static assertion failed: uninitialized 'const e'
 global_variable(extern,int,f,2);//warning: 'int ____SGV_helper_function_f()' is deprecated: 'f' initialized and declared 'extern'
+std::string function(int x)
+{
+	return "void function("+std::to_string(x)+")";
+}
+global_variable(std::string(*)(int),ptr_function,function);
 
 int main()
 {
 	std::cout<<*b_first<<" "<<b->second<<" "<<*d<<std::endl;
 	//std::cout<<*c; //error: undefined reference to `c'
 	++*f*=5;
-	std::cout<<*f<<std::endl;
+	std::cout<<(*ptr_function)(*f)<<std::endl;
 }
 ```
 输出：
 ```
 2 3.01 1099511627775
-15
+void function(15)
 ```
 ## 类
 ### global_variable_t
-- [ ] `template <typename Tp,Tp (&Init)(),const char*const*const Name=nullptr> class global_variable_t`	[类模板] *[C++ 14]*
+- [ ] `template <typename Tp,Tp (&Init)(),const char*const*const Name=nullptr> class global_variable_t`	[类模板] *[C++ 17 前]*
 - [ ] `template <typename Tp,const auto &Init,const char*const*const Name=nullptr> class global_variable_t`	[类模板] *[C++ 17 起]*
 
 包装一个可能在构造前使用的全局变量。`global_variable_t`保证，即使未构造也能正常使用，只要假设 1、2 成立。
@@ -93,7 +98,7 @@ int main()
 - `Tp`: 包装的全局变量的类型，满足*可析构(Destructible)* 要求和*可移动构造
 	(MoveConstructible)* 要求。
 	
-- `Init`: 初始化全局变量的方法，<u>是函数指针</u>[C++ 14]　<u>满足*可调用 (Callable)* 要求</u> [C++ 17 起]，更进一步，`Init`接受`0`个参数，返回值的类型是`Tp`。
+- `Init`: 初始化全局变量的方法，<ins>是函数指针</ins>[C++ 14]　<ins>满足*可调用 (Callable)* 要求</ins> [C++ 17 起]，更进一步，`Init`接受`0`个参数，返回值的类型是`Tp`。
 
 - `Name`: 变量的名称，是一个`const char*`变量的地址。
 
@@ -176,12 +181,9 @@ what():  the circle is 'b' <-- 'a' <-- 'b'
 
 ## 更新与兼容性
 
-### v1.0.0 -> v1.1.0
-1. 弃用了`extern_global_variable`宏，在`global_variable`，的`specifier`中加入`extern `即可声明外部变量；
-2. 允许去掉`global_variable`的`init`参数而不初始化变量，注意：
-   - 是 **去掉** 而非 **留空** ，
-   - 不得初始化外部变量；
-3. 修改文档的错误：`global_variable`的`specifier`中可以含有`static`。
+### v2.0.0 -> v2.0.1
+1. 现在支持 MSVC 的“传统预处理器”；
+2. 现在`type`可以是任何类型，如`void(*)()`。
 
 ### v1.1.0 -> v2.0.0
 1. 修复了使用`extern`时，因使用不完整类型而出现编译错误的问题；
@@ -191,7 +193,11 @@ what():  the circle is 'b' <-- 'a' <-- 'b'
 5. 在声明外部变量时初始化将导致警告，而非错误；
 6. 在`specifier`发生冲突时，尝试通过`static_assert`和`deprecated`属性给出诊断信息。
 
-### v2.0.0 -> v2.0.1
-现在支持 MSVC 的“传统预处理器”。
+### v1.0.0 -> v1.1.0
+1. 弃用了`extern_global_variable`宏，在`global_variable`，的`specifier`中加入`extern `即可声明外部变量；
+2. 允许去掉`global_variable`的`init`参数而不初始化变量，注意：
+   - 是 **去掉** 而非 **留空** ，
+   - 不得初始化外部变量；
+3. 修改文档的错误：`global_variable`的`specifier`中可以含有`static`。
 
 本版本（2.0.1）与v2.0.0源代码兼容，且二进制兼容；与 v1.x 源代码兼容，但**不**二进制兼容。后续的版本可能会移除与v1.0.0的源代码兼容性，毕竟v1.0.0并未发布过。为了解决一个已知问题，下一个版本可能与本版本**不**二进制兼容。

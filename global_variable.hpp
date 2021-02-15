@@ -505,7 +505,7 @@ public:
 //
 #define ____SGV_GV00000_ARG2(type,name) ____SGV_GV00000_ARG3(type,name,{})
 #define ____SGV_GV00000_ARG3(type,name,init)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -513,13 +513,13 @@ public:
 
 //extern
 #define ____SGV_GV10000_ARG2(type,name)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type);\
 	extern const char *____SGV_variable_name_##name;\
 	extern global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10000_ARG3(type,name,init)\
 	[[deprecated("'" #name "' initialized and declared 'extern'")]]\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -528,7 +528,7 @@ public:
 //static
 #define ____SGV_GV01000_ARG2(type,name) ____SGV_GV01000_ARG3(type,name,{})
 #define ____SGV_GV01000_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name()->____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	static global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -544,7 +544,7 @@ public:
 #define ____SGV_GV00100_ARG2(type,name)\
 	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV00100_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	const global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -552,12 +552,12 @@ public:
 
 //extern const
 #define ____SGV_GV10100_ARG2(type,name)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type);\
 	extern const char *____SGV_variable_name_##name;\
 	extern const global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10100_ARG3(type,name,init)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	extern const global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -569,7 +569,7 @@ public:
 #define ____SGV_GV01100_ARG2(type,name)\
 	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV01100_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	const global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -584,7 +584,7 @@ public:
 //volatile
 #define ____SGV_GV00010_ARG2(type,name) ____SGV_GV00010_ARG3(type,name,{})
 #define ____SGV_GV00010_ARG3(type,name,init)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -592,13 +592,13 @@ public:
 
 //extern volatile
 #define ____SGV_GV10010_ARG2(type,name)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type);\
 	extern const char *____SGV_variable_name_##name;\
 	extern volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10010_ARG3(type,name,init)\
 	[[deprecated("'" #name "' initialized and declared 'extern'")]]\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -607,7 +607,7 @@ public:
 //static volatile
 #define ____SGV_GV01010_ARG2(type,name) ____SGV_GV01010_ARG3(type,name,{})
 #define ____SGV_GV01010_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	static volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -623,7 +623,7 @@ public:
 #define ____SGV_GV00110_ARG2(type,name)\
 	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV00110_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	const volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -631,12 +631,12 @@ public:
 
 //extern const volatile
 #define ____SGV_GV10110_ARG2(type,name)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type);\
 	extern const char *____SGV_variable_name_##name;\
 	extern const volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10110_ARG3(type,name,init)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	extern const volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -648,7 +648,7 @@ public:
 #define ____SGV_GV01110_ARG2(type,name)\
 	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV01110_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	const volatile global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -663,7 +663,7 @@ public:
 //thread_local
 #define ____SGV_GV00001_ARG2(type,name) ____SGV_GV00001_ARG2(type,name,())
 #define ____SGV_GV00001_ARG3(type,name,init)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -671,13 +671,13 @@ public:
 
 //extern thread_local
 #define ____SGV_GV10001_ARG2(type,name)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type);\
 	extern const char *____SGV_variable_name_##name;\
 	extern thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10001_ARG3(type,name,init)\
 	[[deprecated("'" #name "' initialized and declared 'extern'")]]\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -686,7 +686,7 @@ public:
 //static thread_local
 #define ____SGV_GV01001_ARG2(type,name) ____SGV_GV01001_ARG3(type,name,{})
 #define ____SGV_GV01001_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	static thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -702,7 +702,7 @@ public:
 #define ____SGV_GV00101_ARG2(type,name)\
 	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV00101_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	const thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -710,12 +710,12 @@ public:
 
 //extern const thread_local
 #define ____SGV_GV10101_ARG2(type,name)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type);\
 	extern const char *____SGV_variable_name_##name;\
 	extern const thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10101_ARG3(type,name,init)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	extern const thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -727,7 +727,7 @@ public:
 #define ____SGV_GV01101_ARG2(type,name)\
 	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV01101_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	const thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -742,7 +742,7 @@ public:
 //volatile thread_local
 #define ____SGV_GV00011_ARG2(type,name) ____SGV_GV00011_ARG3(type,name,{})
 #define ____SGV_GV00011_ARG3(type,name,init)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -750,13 +750,13 @@ public:
 
 //extern volatile thread_local
 #define ____SGV_GV10011_ARG2(type,name)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type);\
 	extern const char *____SGV_variable_name_##name;\
 	extern volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10011_ARG3(type,name,init)\
 	[[deprecated("'" #name "' initialized and declared 'extern'")]]\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -765,7 +765,7 @@ public:
 //static volatile thread_local
 #define ____SGV_GV01011_ARG2(type,name) ____SGV_GV01011_ARG3(type,name,{})
 #define ____SGV_GV01011_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	static volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -781,7 +781,7 @@ public:
 #define ____SGV_GV00111_ARG2(type,name)\
 	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV00111_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	const volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -789,12 +789,12 @@ public:
 	
 //extern const volatile thread_local
 #define ____SGV_GV10111_ARG2(type,name)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name();\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type);\
 	extern const char *____SGV_variable_name_##name;\
 	extern const volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
 #define ____SGV_GV10111_ARG3(type,name,init)\
-	____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	const char *____SGV_variable_name_##name=#name;\
 	extern const volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
@@ -806,7 +806,7 @@ public:
 #define ____SGV_GV01111_ARG2(type,name)\
 	static_assert(false,"uninitialized 'const " #name "'")
 #define ____SGV_GV01111_ARG3(type,name,init)\
-	static ____SGV_TRY_REMOVE_PARENS(type) ____SGV_helper_function_##name()\
+	static auto ____SGV_helper_function_##name() -> ____SGV_TRY_REMOVE_PARENS(type)\
 		{return ____SGV_TRY_REMOVE_PARENS(init);}\
 	static const char *____SGV_variable_name_##name=#name;\
 	const volatile thread_local global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
