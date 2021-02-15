@@ -6,7 +6,7 @@ without any warranty.-->
 
 # global variable
 
-当前版本：2.0.0			上一版本：1.1.0
+当前版本：2.0.1（未完成）			上一版本：2.0.1
 
 C++ 语言版本要求：C++ 14、C++ 17 或 C++ 20
 
@@ -59,6 +59,7 @@ C++ 程序的一个全局变量(指具有命名空间作用域的对象)的构�
 #### 示例
 ```cpp
 #include <iostream>
+#include <utility>
 #include <global_variable.hpp>
 global_variable(int,a);	//equal to int a;
 global_variable(extern const,(std::pair<int,double>),b);
@@ -66,16 +67,21 @@ global_variable(int,b_first,b->first);	//initalize before b
 global_variable(extern const,(std::pair<int,double>),b,({2,3.01}));	
 global_variable(extern,double,c);
 global_variable(long long,d,0xFFFFFFFFFF);
+//global_variable(const,int,e);//error: static assertion failed: uninitialized 'const e'
+global_variable(extern,int,f,2);//warning: 'int ____SGV_helper_function_f()' is deprecated: 'f' initialized and declared 'extern'
 
 int main()
 {
 	std::cout<<*b_first<<" "<<b->second<<" "<<*d<<std::endl;
-//	std::cout<<*c;//Error: undefined reference to `c'
+	//std::cout<<*c; //error: undefined reference to `c'
+	++*f*=5;
+	std::cout<<*f<<std::endl;
 }
 ```
 输出：
 ```
 2 3.01 1099511627775
+15
 ```
 ## 类
 ### global_variable_t
@@ -165,7 +171,7 @@ what():  the circle is 'b' <-- 'a' <-- 'b'
 ```cpp
 #define ____SGV_VERS_MAJOR 2ull
 #define ____SGV_VERS_MINOR 0ull
-#define ____SGV_VERS_PATCHLEVEL 0ull
+#define ____SGV_VERS_PATCHLEVEL 1ull
 ```
 
 ## 更新与兼容性
@@ -185,4 +191,7 @@ what():  the circle is 'b' <-- 'a' <-- 'b'
 5. 在声明外部变量时初始化将导致警告，而非错误；
 6. 在`specifier`发生冲突时，尝试通过`static_assert`和`deprecated`属性给出诊断信息。
 
-本版本（2.0.0）与 v1.x 源代码兼容，但**不**二进制兼容。后续的版本可能会移除与v1.0.0的源代码兼容性，毕竟v1.0.0并未发布过。为了解决一个已知问题，下一个版本可能与本版本**不**二进制兼容。
+### v2.0.0 -> v2.0.1
+现在支持 MSVC 的“传统预处理器”。
+
+本版本（2.0.1）与v2.0.0源代码兼容，且二进制兼容；与 v1.x 源代码兼容，但**不**二进制兼容。后续的版本可能会移除与v1.0.0的源代码兼容性，毕竟v1.0.0并未发布过。为了解决一个已知问题，下一个版本可能与本版本**不**二进制兼容。

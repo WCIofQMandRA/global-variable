@@ -1,5 +1,5 @@
 //global_variable.hpp
-//version 2.0.0
+//version 2.0.1
 //Copyright (C) 2021 张子辰
 //安全地处理可能在构造前使用的全局变量
 
@@ -13,7 +13,7 @@
 
 #define ____SGV_VERS_MAJOR 2ull
 #define ____SGV_VERS_MINOR 0ull
-#define ____SGV_VERS_PATCHLEVEL 0ull
+#define ____SGV_VERS_PATCHLEVEL 1ull
 
 class circular_initialization:public std::logic_error
 {
@@ -26,7 +26,7 @@ public:
 		:std::logic_error(other){}
 };
 
-#if defined(__cpp_nontype_template_parameter_auto) || __cplusplus>=201703L
+#if defined(__cpp_nontype_template_parameter_auto) || __cplusplus>=201703L || (defined(_MSVC_LANG)&&_MSVC_LANG>=201703L)
 template <typename Tp,const auto &Init,const char*const*const Name=nullptr>
 #else
 template <typename Tp,Tp (&Init)(),const char*const*const Name=nullptr>
@@ -97,6 +97,241 @@ public:
 		delete reinterpret_cast<Tp*>(d);
 	}
 };
+#if defined(_MSC_VER)&&(!defined(_MSVC_TRADITIONAL)||_MSVC_TRADITIONAL)
+#	define ____SGV_STUPID_PREPROCESSOR 1
+//warning C4003: not enough arguments for function-like macro invocation '____SGV_CHECKxx'
+#	pragma warning(disable:3)
+#else
+#	define ____SGV_STUPID_PREPROCESSOR 0
+#endif
+
+#if ____SGV_STUPID_PREPROCESSOR
+///
+/// stupid preprocessor begin
+///
+#define ____SGV_EXPAND(x) (x)
+#define ____SGV_EXPAND4(x,_1,_2,_3) (x,_1,_2,_3)
+//延迟拼接
+#define ____SGV_CONCAT(x,y) ____SGV_CONCATa(x,y)
+#define ____SGV_CONCATa(x,y) ____SGV_CONCATb(x,y)
+#define ____SGV_CONCATb(x,y) ____SGV_CONCATc(x,y)
+#define ____SGV_CONCATc(x,y) ____SGV_CONCATd(x,y)
+#define ____SGV_CONCATd(x,y) ____SGV_CONCATe(x,y)
+#define ____SGV_CONCATe(x,y) ____SGV_CONCATf(x,y)
+#define ____SGV_CONCATf(x,y) ____SGV_CONCATg(x,y)
+#define ____SGV_CONCATg(x,y) ____SGV_CONCATh(x,y)
+#define ____SGV_CONCATh(x,y) ____SGV_CONCATi(x,y)
+#define ____SGV_CONCATi(x,y) ____SGV_CONCATj(x,y)
+#define ____SGV_CONCATj(x,y) ____SGV_CONCATk(x,y)
+#define ____SGV_CONCATk(x,y) ____SGV_CONCATl(x,y)
+#define ____SGV_CONCATl(x,y) ____SGV_CONCATm(x,y)
+#define ____SGV_CONCATm(x,y) ____SGV_CONCATn(x,y)
+#define ____SGV_CONCATn(x,y) x##y
+#define ____SGV_CONCAT3(x,y,z) ____SGV_CONCAT3a(x,y,z)
+#define ____SGV_CONCAT3a(x,y,z) x##y##z
+#define ____SGV_CONCAT5(x,y,z,w,v) ____SGV_CONCAT5a(x,y,z,w,v)
+#define ____SGV_CONCAT5a(x,y,z,w,v) ____SGV_CONCAT5b(x,y,z,w,v)
+#define ____SGV_CONCAT5b(x,y,z,w,v) ____SGV_CONCAT5c(x,y,z,w,v)
+#define ____SGV_CONCAT5c(x,y,z,w,v) ____SGV_CONCAT5d(x,y,z,w,v)
+#define ____SGV_CONCAT5d(x,y,z,w,v) ____SGV_CONCAT5e(x,y,z,w,v)
+#define ____SGV_CONCAT5e(x,y,z,w,v) ____SGV_CONCAT5f(x,y,z,w,v)
+#define ____SGV_CONCAT5f(x,y,z,w,v) ____SGV_CONCAT5g(x,y,z,w,v)
+#define ____SGV_CONCAT5g(x,y,z,w,v) ____SGV_CONCAT5h(x,y,z,w,v)
+#define ____SGV_CONCAT5h(x,y,z,w,v) ____SGV_CONCAT5i(x,y,z,w,v)
+#define ____SGV_CONCAT5i(x,y,z,w,v) ____SGV_CONCAT5j(x,y,z,w,v)
+#define ____SGV_CONCAT5j(x,y,z,w,v) ____SGV_CONCAT5k(x,y,z,w,v)
+#define ____SGV_CONCAT5k(x,y,z,w,v) ____SGV_CONCAT5l(x,y,z,w,v)
+#define ____SGV_CONCAT5l(x,y,z,w,v) ____SGV_CONCAT5m(x,y,z,w,v)
+#define ____SGV_CONCAT5m(x,y,z,w,v) ____SGV_CONCAT5n(x,y,z,w,v)
+#define ____SGV_CONCAT5n(x,y,z,w,v) x##y##z##w##v
+
+//条件
+#define ____SGV_IF(STA,THEN,ELSE) ____SGV_CONCAT(____SGV_IF_,STA) (THEN,ELSE)
+#define ____SGV_IF_0(THEN,ELSE) ELSE
+#define ____SGV_IF_1(THEN,ELSE) THEN
+
+//获取参数
+#define ____SGV_GET_2(_0,_1,_2,...) _2
+#define ____SGV_GET_7(_0,_1,_2,_3,_4,_5,_6,_7,...) _7
+
+//判断是否有括号
+#define ____SGV_IS_PARENS(x) ____SGV_IS_PARENS_IMPL(____SGV_COMMA_V x)
+#define ____SGV_IS_PARENS_IMPL(...) ____SGV_GET_2 ____SGV_EXPAND4(__VA_ARGS__,1,0,0)
+#define ____SGV_COMMA_V(...) ,
+
+//判断是否为空，假定x不是元组
+#define ____SGV_EMPTY_1(...) ____SGV_EMPTY_1a(__VA_ARGS__)
+#define ____SGV_EMPTY_1a(...) ____SGV_EMPTY_1b(__VA_ARGS__)
+#define ____SGV_EMPTY_1b(...) ____SGV_EMPTY_1c(__VA_ARGS__)
+#define ____SGV_EMPTY_1c(...) ____SGV_EMPTY_1d(__VA_ARGS__)
+#define ____SGV_EMPTY_1d(...) ____SGV_EMPTY_1e(__VA_ARGS__)
+#define ____SGV_EMPTY_1e(...) ____SGV_EMPTY_1f(__VA_ARGS__)
+#define ____SGV_EMPTY_1f(...) ____SGV_EMPTY_1g(__VA_ARGS__)
+#define ____SGV_EMPTY_1g(...) ____SGV_EMPTY_1h(__VA_ARGS__)
+#define ____SGV_EMPTY_1h(...) ____SGV_EMPTY_1i(__VA_ARGS__)
+#define ____SGV_EMPTY_1i(...) ____SGV_EMPTY_1j(__VA_ARGS__)
+#define ____SGV_EMPTY_1j(...) ____SGV_EMPTY_1k(__VA_ARGS__)
+#define ____SGV_EMPTY_1k(...) ____SGV_EMPTY_1l(__VA_ARGS__)
+#define ____SGV_EMPTY_1l(...) ____SGV_EMPTY_1_IMPL(____SGV_COMMA_V __VA_ARGS__(),1,0)
+#define ____SGV_EMPTY_1_IMPL(...) ____SGV_GET_2 ____SGV_EXPAND(__VA_ARGS__)
+
+//移除括号
+#define ____SGV_REMOVE_PARENS(x) ____SGV_REMOVE_PARENS_IMPL x
+#define ____SGV_REMOVE_PARENS_IMPL(...) __VA_ARGS__
+//在有括号时移除括号
+#define ____SGV_TRY_REMOVE_PARENS(x)\
+	____SGV_IF(____SGV_IS_PARENS(x),____SGV_REMOVE_PARENS,____SGV_ECHO)(x)
+#define ____SGV_ECHO(x) x//回显参数
+
+//检查x是否是合法的限定符
+#define ____SGV_IS_SPECIFIER(x)\
+	____SGV_IF(____SGV_IS_PARENS(x),____SGV_IS_SPECIFIER_TUPLE,____SGV_IS_SPECIFIER_NTUPLE)(x)
+#define ____SGV_IS_SPECIFIER_TUPLE(x) 0
+//检查非元组x是否是合法的限定符
+#define ____SGV_IS_SPECIFIER_NTUPLE(x) ____SGV_EMPTY_1(____SGV_IS_SPECIFIER_IMPL0(x))
+//检查限定符是否合法，合法时展开为空，否则为一个非空、非元组的宏参数
+#define ____SGV_IS_SPECIFIER_IMPL0(x) 	____SGV_IS_SPECIFIER_IMPL1(____SGV_CHECKv(x))
+//当且仅当x为____SGV_HASv_时，展开为空
+#define ____SGV_IS_SPECIFIER_IMPL1(x) ____SGV_IS_SPECIFIER_IMPL1a(x)
+#define ____SGV_IS_SPECIFIER_IMPL1a(x) ____SGV_IS_SPECIFIER_IMPL1b(x)
+#define ____SGV_IS_SPECIFIER_IMPL1b(x) ____SGV_IS_SPECIFIER_IMPL1c(x)
+#define ____SGV_IS_SPECIFIER_IMPL1c(x) ____SGV_IS_SPECIFIER_IMPL1d(x)
+#define ____SGV_IS_SPECIFIER_IMPL1d(x) ____SGV_IS_SPECIFIER_IMPL1e(x)
+#define ____SGV_IS_SPECIFIER_IMPL1e(x) ____SGV_IS_SPECIFIER_IMPL1f(x)
+#define ____SGV_IS_SPECIFIER_IMPL1f(x) ____SGV_IS_SPECIFIER_IMPL1g(x)
+#define ____SGV_IS_SPECIFIER_IMPL1g(x) ____SGV_IS_SPECIFIER_IMPL1h(x)
+#define ____SGV_IS_SPECIFIER_IMPL1h(x) ____SGV_IS_SPECIFIER_IMPL1i(x)
+#define ____SGV_IS_SPECIFIER_IMPL1i(x) ____SGV_IS_SPECIFIER_IMPL1j(x)
+#define ____SGV_IS_SPECIFIER_IMPL1j(x) ____SGV_IS_SPECIFIER_IMPL1k(x)
+#define ____SGV_IS_SPECIFIER_IMPL1k(x) ____SGV_IS_SPECIFIER_IMPL1l(x)
+#define ____SGV_IS_SPECIFIER_IMPL1l(x) ____SGV_IS_SPECIFIER_IMPL1m x
+#define ____SGV_IS_SPECIFIER_IMPL1m(x) ____SGV_CONCAT(____SGV_IS_SPECIFIER_IMPL2,x)
+#define ____SGV_IS_SPECIFIER_IMPL2____SGV_HASv_
+
+#define ____SGV_CHECKv(...) (____SGV_HASv_##__VA_ARGS__)
+#define ____SGV_CHECKv1(...) ____SGV_HASv_##__VA_ARGS__)
+#define ____SGV_CHECKv2(...) ____SGV_HASv_##__VA_ARGS__)
+#define ____SGV_CHECKv3(...) ____SGV_HASv_##__VA_ARGS__)
+#define ____SGV_CHECKv4(...) ____SGV_HASv_##__VA_ARGS__)
+#define ____SGV_CHECKv5(...) ____SGV_HASv_##__VA_ARGS__)
+#define ____SGV_HASv_static ____SGV_CHECKv1 ____SGV_LPAR
+#define ____SGV_HASv_const ____SGV_CHECKv2 ____SGV_LPAR
+#define ____SGV_HASv_thread_local ____SGV_CHECKv3 ____SGV_LPAR
+#define ____SGV_HASv_volatile ____SGV_CHECKv4 ____SGV_LPAR
+#define ____SGV_HASv_extern ____SGV_CHECKv5 ____SGV_LPAR
+
+#define ____SGV_LPAR (
+//检测限定符中是否有extern
+#define ____SGV_CHECK0(x) ____SGV_HAS0_##x)
+#define ____SGV_CHECK01(x) ____SGV_HAS0_##x)
+#define ____SGV_CHECK02(x) ____SGV_HAS0_##x)
+#define ____SGV_CHECK03(x) ____SGV_HAS0_##x)
+#define ____SGV_CHECK04(x) ____SGV_HAS0_##x)
+#define ____SGV_HAS0_static ____SGV_CHECK01 ____SGV_LPAR
+#define ____SGV_HAS0_const ____SGV_CHECK02 ____SGV_LPAR
+#define ____SGV_HAS0_thread_local ____SGV_CHECK03 ____SGV_LPAR
+#define ____SGV_HAS0_volatile ____SGV_CHECK04 ____SGV_LPAR
+#define ____SGV_HAS0_extern ____SGV_HAS0_extern_IMPL ____SGV_LPAR
+#define ____SGV_HAS0_ ____SGV_HAS0_IMPL ____SGV_LPAR
+#define ____SGV_HAS0_IMPL(...) 0
+#define ____SGV_HAS0_extern_IMPL(...) 1
+
+//检测限定符中是否有static
+#define ____SGV_CHECK1(x) ____SGV_HAS1_##x)
+#define ____SGV_CHECK11(x) ____SGV_HAS1_##x)
+#define ____SGV_CHECK12(x) ____SGV_HAS1_##x)
+#define ____SGV_CHECK13(x) ____SGV_HAS1_##x)
+#define ____SGV_CHECK14(x) ____SGV_HAS1_##x)
+#define ____SGV_HAS1_extern ____SGV_CHECK11 ____SGV_LPAR
+#define ____SGV_HAS1_const ____SGV_CHECK12 ____SGV_LPAR
+#define ____SGV_HAS1_thread_local ____SGV_CHECK13 ____SGV_LPAR
+#define ____SGV_HAS1_volatile ____SGV_CHECK14 ____SGV_LPAR
+#define ____SGV_HAS1_static ____SGV_HAS1_static_IMPL ____SGV_LPAR
+#define ____SGV_HAS1_ ____SGV_HAS1_IMPL ____SGV_LPAR
+#define ____SGV_HAS1_IMPL(...) 0
+#define ____SGV_HAS1_static_IMPL(...) 1
+
+//检测限定符中是否有const
+#define ____SGV_CHECK2(x) ____SGV_HAS2_##x)
+#define ____SGV_CHECK21(x) ____SGV_HAS2_##x)
+#define ____SGV_CHECK22(x) ____SGV_HAS2_##x)
+#define ____SGV_CHECK23(x) ____SGV_HAS2_##x)
+#define ____SGV_CHECK24(x) ____SGV_HAS2_##x)
+#define ____SGV_HAS2_extern ____SGV_CHECK21 ____SGV_LPAR
+#define ____SGV_HAS2_static ____SGV_CHECK22 ____SGV_LPAR
+#define ____SGV_HAS2_thread_local ____SGV_CHECK23 ____SGV_LPAR
+#define ____SGV_HAS2_volatile ____SGV_CHECK24 ____SGV_LPAR
+#define ____SGV_HAS2_const ____SGV_HAS2_const_IMPL ____SGV_LPAR
+#define ____SGV_HAS2_ ____SGV_HAS2_IMPL ____SGV_LPAR
+#define ____SGV_HAS2_IMPL(...) 0
+#define ____SGV_HAS2_const_IMPL(...) 1
+
+//检测限定符中是否有volatile
+#define ____SGV_CHECK3(x) ____SGV_HAS3_##x)
+#define ____SGV_CHECK31(x) ____SGV_HAS3_##x)
+#define ____SGV_CHECK32(x) ____SGV_HAS3_##x)
+#define ____SGV_CHECK33(x) ____SGV_HAS3_##x)
+#define ____SGV_CHECK34(x) ____SGV_HAS3_##x)
+#define ____SGV_HAS3_extern ____SGV_CHECK31 ____SGV_LPAR
+#define ____SGV_HAS3_static ____SGV_CHECK32 ____SGV_LPAR
+#define ____SGV_HAS3_thread_local ____SGV_CHECK33 ____SGV_LPAR
+#define ____SGV_HAS3_const ____SGV_CHECK34 ____SGV_LPAR
+#define ____SGV_HAS3_volatile ____SGV_HAS3_volatile_IMPL ____SGV_LPAR
+#define ____SGV_HAS3_ ____SGV_HAS3_IMPL ____SGV_LPAR
+#define ____SGV_HAS3_IMPL(...) 0
+#define ____SGV_HAS3_volatile_IMPL(...) 1
+
+//检测限定符中是否有thread_local
+#define ____SGV_CHECK4(x) ____SGV_HAS4_##x)
+#define ____SGV_CHECK41(x) ____SGV_HAS4_##x)
+#define ____SGV_CHECK42(x) ____SGV_HAS4_##x)
+#define ____SGV_CHECK43(x) ____SGV_HAS4_##x)
+#define ____SGV_CHECK44(x) ____SGV_HAS4_##x)
+#define ____SGV_HAS4_extern ____SGV_CHECK41 ____SGV_LPAR
+#define ____SGV_HAS4_static ____SGV_CHECK42 ____SGV_LPAR
+#define ____SGV_HAS4_volatile ____SGV_CHECK43 ____SGV_LPAR
+#define ____SGV_HAS4_const ____SGV_CHECK44 ____SGV_LPAR
+#define ____SGV_HAS4_thread_local ____SGV_HAS4_thread_local_IMPL ____SGV_LPAR
+#define ____SGV_HAS4_ ____SGV_HAS4_IMPL ____SGV_LPAR
+#define ____SGV_HAS4_IMPL(...) 0
+#define ____SGV_HAS4_thread_local_IMPL(...) 1
+
+//匹配限定符：extern static const volatile thread_local
+//展开结果：
+//对于合法的限定符，为由0/1组成的5位数，第i位表示是否有上一行的第i个限定符
+//对于非法的限定符，为“invalid”
+#define ____SGV_SPECIFIERS(spec)\
+	____SGV_IF(____SGV_IS_SPECIFIER(spec),\
+		____SGV_SPECIFIERS_VALID,____SGV_SPECIFIERS_INVALID)(spec)
+#define ____SGV_SPECIFIERS_INVALID(spec) invalid
+#define ____SGV_SPECIFIERS_VALID(spec)\
+	____SGV_CONCAT5(____SGV_CHECK0(spec),____SGV_CHECK1(spec),\
+	____SGV_CHECK2(spec),____SGV_CHECK3(spec),____SGV_CHECK4(spec))
+
+//4重载
+#define ____SGV_global_variable(...) ____SGV_CONCAT(____SGV_GV_ARG,____SGV_GET_7(__VA_ARGS__,7,6,5,4,3,2,1))____SGV_EXPAND(__VA_ARGS__)
+//global_variable(type,name)
+#define ____SGV_GV_ARG2(type,name)\
+	____SGV_CONCAT3(____SGV_GV,00000,_ARG2)(type,name)
+//
+#define ____SGV_GV_ARG3(x,y,z)\
+	____SGV_IF(____SGV_IS_SPECIFIER(x),____SGV_GV_ARG30,____SGV_GV_ARG31)(x,y,z)
+//global_variable(specifier,type,name)
+#define ____SGV_GV_ARG30(specifier,type,name)\
+	____SGV_CONCAT3(____SGV_GV,____SGV_SPECIFIERS_VALID(specifier),_ARG2)(type,name)
+//global_variable(type,name,init)
+#define ____SGV_GV_ARG31(type,name,init)\
+	____SGV_CONCAT3(____SGV_GV,00000,_ARG3)(type,name,init)
+//global_variable(specifier,type,name,init)
+#define ____SGV_GV_ARG4(specifier,type,name,init)\
+	____SGV_CONCAT3(____SGV_GV,____SGV_SPECIFIERS(specifier),_ARG3)(type,name,init)
+///
+///stupid preprocessor end
+///
+#else
+///
+///normal preprocessor begin
+///
 //延迟拼接
 #define ____SGV_CONCAT(x,y) ____SGV_CONCAT_IMPL(x,y)
 #define ____SGV_CONCAT_IMPL(x,y) x##y
@@ -243,6 +478,28 @@ public:
 	____SGV_CONCAT5(____SGV_CHECK0(spec),____SGV_CHECK1(spec),\
 	____SGV_CHECK2(spec),____SGV_CHECK3(spec),____SGV_CHECK4(spec))
 
+//4重载
+#define ____SGV_global_variable(...) ____SGV_CONCAT(____SGV_GV_ARG,____SGV_GET_7(__VA_ARGS__,7,6,5,4,3,2,1))(__VA_ARGS__)
+//global_variable(type,name)
+#define ____SGV_GV_ARG2(type,name)\
+	____SGV_CONCAT3(____SGV_GV,00000,_ARG2)(type,name)
+//
+#define ____SGV_GV_ARG3(x,y,z)\
+	____SGV_IF(____SGV_IS_SPECIFIER(x),____SGV_GV_ARG30,____SGV_GV_ARG31)(x,y,z)
+//global_variable(specifier,type,name)
+#define ____SGV_GV_ARG30(specifier,type,name)\
+	____SGV_CONCAT3(____SGV_GV,____SGV_SPECIFIERS_VALID(specifier),_ARG2)(type,name)
+//global_variable(type,name,init)
+#define ____SGV_GV_ARG31(type,name,init)\
+	____SGV_CONCAT3(____SGV_GV,00000,_ARG3)(type,name,init)
+//global_variable(specifier,type,name,init)
+#define ____SGV_GV_ARG4(specifier,type,name,init)\
+	____SGV_CONCAT3(____SGV_GV,____SGV_SPECIFIERS(specifier),_ARG3)(type,name,init)
+#endif
+///
+///normal preprocessor end
+///
+
 //当参数传递到这些宏时，已经过至少一次转发，已完全展开，所以无需使用延迟拼接
 #if 1
 //
@@ -253,7 +510,6 @@ public:
 	const char *____SGV_variable_name_##name=#name;\
 	global_variable_t<____SGV_TRY_REMOVE_PARENS(type),\
 		____SGV_helper_function_##name,&____SGV_variable_name_##name> name
-
 
 //extern
 #define ____SGV_GV10000_ARG2(type,name)\
@@ -563,23 +819,6 @@ public:
 	static_assert(false,"conflicting specifiers in declaration of '" #name "' (extern static)")
 #endif// if 0/1
 
-//4重载
-#define ____SGV_global_variable(...) ____SGV_CONCAT(____SGV_GV_ARG,____SGV_GET_7(__VA_ARGS__,7,6,5,4,3,2,1))(__VA_ARGS__)
-//global_variable(type,name)
-#define ____SGV_GV_ARG2(type,name)\
-	____SGV_CONCAT3(____SGV_GV,00000,_ARG2)(type,name)
-//
-#define ____SGV_GV_ARG3(x,y,z)\
-	____SGV_IF(____SGV_IS_SPECIFIER(x),____SGV_GV_ARG30,____SGV_GV_ARG31)(x,y,z)
-//global_variable(specifier,type,name)
-#define ____SGV_GV_ARG30(specifier,type,name)\
-	____SGV_CONCAT3(____SGV_GV,____SGV_SPECIFIERS_VALID(specifier),_ARG2)(type,name)
-//global_variable(type,name,init)
-#define ____SGV_GV_ARG31(type,name,init)\
-	____SGV_CONCAT3(____SGV_GV,00000,_ARG3)(type,name,init)
-//global_variable(specifier,type,name,init)
-#define ____SGV_GV_ARG4(specifier,type,name,init)\
-	____SGV_CONCAT3(____SGV_GV,____SGV_SPECIFIERS(specifier),_ARG3)(type,name,init)
 
 //源代码兼容v1.0.0
 #define ____SGV_extern_global_variable ____SGV_global_variable
