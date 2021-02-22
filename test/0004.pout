@@ -1,0 +1,2 @@
+terminate called after throwing an instance of 'circular_initialization'
+  what():  the circle is 'i0' <-- 'iF' <-- 'iE' <-- 'iD' <-- 'iC' <-- 'iB' <-- 'iA' <-- 'i9' <-- 'i8' <-- 'i7' <-- 'i6' <-- 'i5' <-- 'i4' <-- 'i3' <-- 'i2' <-- 'i1' <-- 'i0'

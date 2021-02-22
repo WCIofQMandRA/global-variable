@@ -501,7 +501,7 @@ public:
 ///
 
 //当参数传递到这些宏时，已经过至少一次转发，已完全展开，所以无需使用延迟拼接
-#if 1
+#ifndef ____SGV_SHOW_PP_RESULT 
 //
 #define ____SGV_GV00000_ARG2(type,name) ____SGV_GV00000_ARG3(type,name,{})
 #define ____SGV_GV00000_ARG3(type,name,init)\
