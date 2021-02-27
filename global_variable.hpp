@@ -99,8 +99,6 @@ public:
 };
 #if defined(_MSC_VER)&&(!defined(_MSVC_TRADITIONAL)||_MSVC_TRADITIONAL)
 #	define ____SGV_STUPID_PREPROCESSOR 1
-//warning C4003: not enough arguments for function-like macro invocation '____SGV_CHECKxx'
-#	pragma warning(disable:3)
 #else
 #	define ____SGV_STUPID_PREPROCESSOR 0
 #endif
@@ -222,77 +220,82 @@ public:
 
 #define ____SGV_LPAR (
 //检测限定符中是否有extern
-#define ____SGV_CHECK0(x) ____SGV_HAS0_##x)
-#define ____SGV_CHECK01(x) ____SGV_HAS0_##x)
-#define ____SGV_CHECK02(x) ____SGV_HAS0_##x)
-#define ____SGV_CHECK03(x) ____SGV_HAS0_##x)
-#define ____SGV_CHECK04(x) ____SGV_HAS0_##x)
+#define ____SGV_CHECK0(...) ____SGV_CHECK00(__VA_ARGS__ ____SGV_end)
+#define ____SGV_CHECK00(...) ____SGV_HAS0_##__VA_ARGS__)
+#define ____SGV_CHECK01(...) ____SGV_HAS0_##__VA_ARGS__)
+#define ____SGV_CHECK02(...) ____SGV_HAS0_##__VA_ARGS__)
+#define ____SGV_CHECK03(...) ____SGV_HAS0_##__VA_ARGS__)
+#define ____SGV_CHECK04(...) ____SGV_HAS0_##__VA_ARGS__)
 #define ____SGV_HAS0_static ____SGV_CHECK01 ____SGV_LPAR
 #define ____SGV_HAS0_const ____SGV_CHECK02 ____SGV_LPAR
 #define ____SGV_HAS0_thread_local ____SGV_CHECK03 ____SGV_LPAR
 #define ____SGV_HAS0_volatile ____SGV_CHECK04 ____SGV_LPAR
 #define ____SGV_HAS0_extern ____SGV_HAS0_extern_IMPL ____SGV_LPAR
-#define ____SGV_HAS0_ ____SGV_HAS0_IMPL ____SGV_LPAR
+#define ____SGV_HAS0_____SGV_end ____SGV_HAS0_IMPL ____SGV_LPAR
 #define ____SGV_HAS0_IMPL(...) 0
 #define ____SGV_HAS0_extern_IMPL(...) 1
 
 //检测限定符中是否有static
-#define ____SGV_CHECK1(x) ____SGV_HAS1_##x)
-#define ____SGV_CHECK11(x) ____SGV_HAS1_##x)
-#define ____SGV_CHECK12(x) ____SGV_HAS1_##x)
-#define ____SGV_CHECK13(x) ____SGV_HAS1_##x)
-#define ____SGV_CHECK14(x) ____SGV_HAS1_##x)
+#define ____SGV_CHECK1(...) ____SGV_CHECK10(__VA_ARGS__ ____SGV_end)
+#define ____SGV_CHECK10(...) ____SGV_HAS1_##__VA_ARGS__)
+#define ____SGV_CHECK11(...) ____SGV_HAS1_##__VA_ARGS__)
+#define ____SGV_CHECK12(...) ____SGV_HAS1_##__VA_ARGS__)
+#define ____SGV_CHECK13(...) ____SGV_HAS1_##__VA_ARGS__)
+#define ____SGV_CHECK14(...) ____SGV_HAS1_##__VA_ARGS__)
 #define ____SGV_HAS1_extern ____SGV_CHECK11 ____SGV_LPAR
 #define ____SGV_HAS1_const ____SGV_CHECK12 ____SGV_LPAR
 #define ____SGV_HAS1_thread_local ____SGV_CHECK13 ____SGV_LPAR
 #define ____SGV_HAS1_volatile ____SGV_CHECK14 ____SGV_LPAR
 #define ____SGV_HAS1_static ____SGV_HAS1_static_IMPL ____SGV_LPAR
-#define ____SGV_HAS1_ ____SGV_HAS1_IMPL ____SGV_LPAR
+#define ____SGV_HAS1_____SGV_end ____SGV_HAS1_IMPL ____SGV_LPAR
 #define ____SGV_HAS1_IMPL(...) 0
 #define ____SGV_HAS1_static_IMPL(...) 1
 
 //检测限定符中是否有const
-#define ____SGV_CHECK2(x) ____SGV_HAS2_##x)
-#define ____SGV_CHECK21(x) ____SGV_HAS2_##x)
-#define ____SGV_CHECK22(x) ____SGV_HAS2_##x)
-#define ____SGV_CHECK23(x) ____SGV_HAS2_##x)
-#define ____SGV_CHECK24(x) ____SGV_HAS2_##x)
+#define ____SGV_CHECK2(...) ____SGV_CHECK20(__VA_ARGS__ ____SGV_end)
+#define ____SGV_CHECK20(...) ____SGV_HAS2_##__VA_ARGS__)
+#define ____SGV_CHECK21(...) ____SGV_HAS2_##__VA_ARGS__)
+#define ____SGV_CHECK22(...) ____SGV_HAS2_##__VA_ARGS__)
+#define ____SGV_CHECK23(...) ____SGV_HAS2_##__VA_ARGS__)
+#define ____SGV_CHECK24(...) ____SGV_HAS2_##__VA_ARGS__)
 #define ____SGV_HAS2_extern ____SGV_CHECK21 ____SGV_LPAR
 #define ____SGV_HAS2_static ____SGV_CHECK22 ____SGV_LPAR
 #define ____SGV_HAS2_thread_local ____SGV_CHECK23 ____SGV_LPAR
 #define ____SGV_HAS2_volatile ____SGV_CHECK24 ____SGV_LPAR
 #define ____SGV_HAS2_const ____SGV_HAS2_const_IMPL ____SGV_LPAR
-#define ____SGV_HAS2_ ____SGV_HAS2_IMPL ____SGV_LPAR
+#define ____SGV_HAS2_____SGV_end ____SGV_HAS2_IMPL ____SGV_LPAR
 #define ____SGV_HAS2_IMPL(...) 0
 #define ____SGV_HAS2_const_IMPL(...) 1
 
 //检测限定符中是否有volatile
-#define ____SGV_CHECK3(x) ____SGV_HAS3_##x)
-#define ____SGV_CHECK31(x) ____SGV_HAS3_##x)
-#define ____SGV_CHECK32(x) ____SGV_HAS3_##x)
-#define ____SGV_CHECK33(x) ____SGV_HAS3_##x)
-#define ____SGV_CHECK34(x) ____SGV_HAS3_##x)
+#define ____SGV_CHECK3(...) ____SGV_CHECK30(__VA_ARGS__ ____SGV_end)
+#define ____SGV_CHECK30(...) ____SGV_HAS3_##__VA_ARGS__)
+#define ____SGV_CHECK31(...) ____SGV_HAS3_##__VA_ARGS__)
+#define ____SGV_CHECK32(...) ____SGV_HAS3_##__VA_ARGS__)
+#define ____SGV_CHECK33(...) ____SGV_HAS3_##__VA_ARGS__)
+#define ____SGV_CHECK34(...) ____SGV_HAS3_##__VA_ARGS__)
 #define ____SGV_HAS3_extern ____SGV_CHECK31 ____SGV_LPAR
 #define ____SGV_HAS3_static ____SGV_CHECK32 ____SGV_LPAR
 #define ____SGV_HAS3_thread_local ____SGV_CHECK33 ____SGV_LPAR
 #define ____SGV_HAS3_const ____SGV_CHECK34 ____SGV_LPAR
 #define ____SGV_HAS3_volatile ____SGV_HAS3_volatile_IMPL ____SGV_LPAR
-#define ____SGV_HAS3_ ____SGV_HAS3_IMPL ____SGV_LPAR
+#define ____SGV_HAS3_____SGV_end ____SGV_HAS3_IMPL ____SGV_LPAR
 #define ____SGV_HAS3_IMPL(...) 0
 #define ____SGV_HAS3_volatile_IMPL(...) 1
 
 //检测限定符中是否有thread_local
-#define ____SGV_CHECK4(x) ____SGV_HAS4_##x)
-#define ____SGV_CHECK41(x) ____SGV_HAS4_##x)
-#define ____SGV_CHECK42(x) ____SGV_HAS4_##x)
-#define ____SGV_CHECK43(x) ____SGV_HAS4_##x)
-#define ____SGV_CHECK44(x) ____SGV_HAS4_##x)
+#define ____SGV_CHECK4(...) ____SGV_CHECK40(__VA_ARGS__ ____SGV_end)
+#define ____SGV_CHECK40(...) ____SGV_HAS4_##__VA_ARGS__)
+#define ____SGV_CHECK41(...) ____SGV_HAS4_##__VA_ARGS__)
+#define ____SGV_CHECK42(...) ____SGV_HAS4_##__VA_ARGS__)
+#define ____SGV_CHECK43(...) ____SGV_HAS4_##__VA_ARGS__)
+#define ____SGV_CHECK44(...) ____SGV_HAS4_##__VA_ARGS__)
 #define ____SGV_HAS4_extern ____SGV_CHECK41 ____SGV_LPAR
 #define ____SGV_HAS4_static ____SGV_CHECK42 ____SGV_LPAR
 #define ____SGV_HAS4_volatile ____SGV_CHECK43 ____SGV_LPAR
 #define ____SGV_HAS4_const ____SGV_CHECK44 ____SGV_LPAR
 #define ____SGV_HAS4_thread_local ____SGV_HAS4_thread_local_IMPL ____SGV_LPAR
-#define ____SGV_HAS4_ ____SGV_HAS4_IMPL ____SGV_LPAR
+#define ____SGV_HAS4_____SGV_end ____SGV_HAS4_IMPL ____SGV_LPAR
 #define ____SGV_HAS4_IMPL(...) 0
 #define ____SGV_HAS4_thread_local_IMPL(...) 1
 
