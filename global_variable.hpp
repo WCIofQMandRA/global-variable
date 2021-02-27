@@ -826,7 +826,15 @@ public:
 //源代码兼容v1.0.0
 #define ____SGV_extern_global_variable ____SGV_global_variable
 
-#ifndef _LIB_SAFE_GLOBAL_VAR_NO_MACRO
+#ifdef _LIB_SAFE_GLOBAL_VAR_NO_MACRO
+#	ifdef _MSC_VER
+#		pragma message("WARNING: _LIB_SAFE_GLOBAL_VAR_NO_MACRO is deprecated, use ____SGV_NO_global_variable instead.")
+#	else
+#		warning "_LIB_SAFE_GLOBAL_VAR_NO_MACRO is deprecated, use ____SGV_NO_global_variable instead."
+#	endif
+#endif
+
+#if !defined(_LIB_SAFE_GLOBAL_VAR_NO_MACRO)&&!defined(____SGV_NO_global_variable)
 #	//源代码兼容v1.0.0
 #	define extern_global_variable ____SGV_extern_global_variable
 #	define global_variable ____SGV_global_variable

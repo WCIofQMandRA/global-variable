@@ -28,10 +28,10 @@ C++ 程序的一个全局变量（指具有命名空间作用域的对象）的�
 ## 宏
 ### global_variable
 
-- [ ] `global_variable(specifier,type,name,init)`	[宏]
-- [ ] `global_variable(specifier,type,name)`	[宏]
-- [ ] `global_variable(type,name,init)`	[宏]
-- [ ] `global_variable(name,init)`	[宏]
+- `global_variable(specifier,type,name,init)`	[宏]
+- `global_variable(specifier,type,name)`	[宏]
+- `global_variable(type,name,init)`	[宏]
+- `global_variable(name,init)`	[宏]
 
 声明/定义全局变量。`global_variable`声明/定义的全局变量在逻辑上等效于`type specifier name=init`，但使用这些全局变量的方法类型于使用指针。`global_variable`尽力给出与 C++ 编译器给出的关于其等效形式的诊断相近的诊断。
 
@@ -90,8 +90,8 @@ void function(15)
 ```
 ## 类
 ### global_variable_t
-- [ ] `template <typename Tp,Tp (&Init)(),const char*const*const Name=nullptr> class global_variable_t`	[类模板] *[C++ 17 前]*
-- [ ] `template <typename Tp,const auto &Init,const char*const*const Name=nullptr> class global_variable_t`	[类模板] *[C++ 17 起]*
+- `template <typename Tp,Tp (&Init)(),const char*const*const Name=nullptr> class global_variable_t`	[类模板] *[C++ 17 前]*
+- `template <typename Tp,const auto &Init,const char*const*const Name=nullptr> class global_variable_t`	[类模板] *[C++ 17 起]*
 
 包装一个可能在构造前使用的全局变量。`global_variable_t`保证，即使未构造也能正常使用，只要假设 1、2 成立。
 
@@ -132,10 +132,10 @@ what():  the circle is 'b' <-- 'a' <-- 'b'
 ```
 
 ## 保留字
-所有以‘`____SGV_`’开头的标识符
+所有以‘`____SGV_`’（`_`×4 + `SGV_`）开头的标识符
 
-## 高级用法
-1. 不定义宏`global_variable`：在首次包含`global_variable.hpp`前定义宏`_LIB_SAFE_GLOBAL_VAR_NO_MACRO`
+## 抑制宏污染
+1. 阻止`global_variable.hpp`定义宏`global_variable`：在首次包含`global_variable.hpp`前定义宏~~`_LIB_SAFE_GLOBAL_VAR_NO_MACRO`~~  *[弃用]* 或`____SGV_NO_global_variable`
 2. 更改宏global_variable的名字：在 1 的基础上，定义宏：
       -  `<global_variable的新名字> ____SGV_global_variable`
 
@@ -152,7 +152,6 @@ what():  the circle is 'b' <-- 'a' <-- 'b'
 - `____SGV_EMPTY_1(x)` [宏, **0**]	判断`x`是否为空，要求`x`不是元组
 - `____SGV_REMOVE_PARENS(x)` [宏, **2**]	将元组`x`解包
 - `____SGV_ECHO(x)` [宏, **1**]	回显参数
-- `____SGV_TRY_REMOVE_PARENS(x)` [宏, **1**]
 - `____SGV_IS_SPECIFIER(x)` [宏, **1**]	判断`x`是否为合法的限定符
 - `____SGV_REMOVE_RIGHT_PAR(x)` [宏, **0**]	移除游离的右括号
 - `____SGV_CHECK0(...)` [宏, **0**]	检查限定符中是否有`extern`
@@ -183,7 +182,8 @@ what():  the circle is 'b' <-- 'a' <-- 'b'
 
 ### v2.0.0 -> v2.0.1
 1. 现在支持 MSVC 的“传统预处理器”；
-2. 现在`type`可以是任何类型，如`void(*)()`。
+2. 现在`type`可以是任何类型，如`void(*)()`；
+3. 宏`_LIB_SAFE_GLOBAL_VAR_NO_MACRO`被弃用，现在，阻止定义宏`global_variable`应该在首次包含`global_variable.hpp`前定义`____SGV_NO_global_variable`，未来（不早于v3.0.0）定义宏`_LIB_SAFE_GLOBAL_VAR_NO_MACRO`将无任何效果。
 
 ### v1.1.0 -> v2.0.0
 1. 修复了使用`extern`时，因使用不完整类型而出现编译错误的问题；
